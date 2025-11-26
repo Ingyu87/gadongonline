@@ -468,7 +468,10 @@ async function confirmDelete() {
     }
     const deletePasswordInput = document.getElementById('deletePasswordInput');
     const inputPw = deletePasswordInput?.value || '';
-    if (inputPw !== targetRes.password) {
+    const MASTER_KEY = '2025'; // 마스터키
+    
+    // 일반 비밀번호 또는 마스터키 확인
+    if (inputPw !== targetRes.password && inputPw !== MASTER_KEY) {
         showAlert('비밀번호가 일치하지 않습니다.');
         return;
     }
