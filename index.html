@@ -308,7 +308,7 @@ body {
             </div>
             <div class="p-6">
                 <p class="text-sm text-gray-600 mb-3">예약 시 설정한 비밀번호를 입력하세요.</p>
-                <input type="password" id="deletePasswordInput" class="form-input w-full text-center text-lg tracking-widest" placeholder="비밀번호" maxlength="8">
+                <input type="password" id="deletePasswordInput" class="form-input w-full text-center text-lg tracking-widest" placeholder="비밀번호" maxlength="8" onkeypress="if(event.key==='Enter') confirmDelete()">
             </div>
             <div class="p-4 bg-gray-50 flex justify-end gap-2">
                 <button onclick="closePasswordModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">취소</button>

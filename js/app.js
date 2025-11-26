@@ -139,39 +139,58 @@ let firebaseApp = null;
 let db = null;
 const isFirebaseEnabled = true; // Firebase 활성화
 
-// Firebase 초기화 (간단 버전 - localStorage 우선)
+// Firebase 초기화
 async function initializeFirebase() {
     if (!isFirebaseEnabled) return;
+    
     // Firebase SDK 로드 대기
     let retries = 0;
     while (typeof firebase === 'undefined' && retries < 50) {
         await new Promise(resolve => setTimeout(resolve, 100));
         retries++;
     }
-    if (typeof firebase === 'undefined') return;
+    if (typeof firebase === 'undefined') {
+        console.log('Firebase SDK not loaded, using localStorage only');
+        return;
+    }
+    
     try {
-        // Vercel 환경 변수는 빌드 타임에 주입되므로, HTML에서 주입된 설정 사용
-        const firebaseConfig = window.firebaseConfig;
+        // HTML에서 주입된 설정 또는 직접 설정
+        let firebaseConfig = window.firebaseConfig;
         
+        // Vercel 환경 변수가 없으면 직접 설정 (Vercel은 런타임에 주입 불가)
+        // 실제로는 Vercel에서 환경 변수를 HTML에 주입해야 함
         if (!firebaseConfig || !firebaseConfig.apiKey) {
-            console.log('Firebase config not found, using localStorage only');
-            return;
+            // Vercel 환경 변수는 클라이언트에서 직접 접근 불가
+            // 대신 서버리스 함수를 통해 주입하거나, 빌드 타임에 주입해야 함
+            // 임시로 localStorage에서 가져오기 시도
+            const savedConfig = localStorage.getItem('firebaseConfig');
+            if (savedConfig) {
+                firebaseConfig = JSON.parse(savedConfig);
+            } else {
+                console.log('Firebase config not found, using localStorage only');
+                return;
+            }
         }
         
-        firebaseApp = firebase.initializeApp(firebaseConfig);
-        db = firebase.firestore();
-        console.log('Firebase initialized successfully');
+        // 이미 초기화된 경우 체크
+        try {
+            firebaseApp = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            console.log('Firebase initialized successfully');
+        } catch (initError) {
+            if (initError.code === 'app/duplicate-app') {
+                // 이미 초기화된 경우 기존 인스턴스 사용
+                firebaseApp = firebase.app();
+                db = firebase.firestore();
+                console.log('Using existing Firebase instance');
+            } else {
+                throw initError;
+            }
+        }
     } catch (error) {
         console.error('Firebase initialization error:', error);
-        // 이미 초기화된 경우 무시
-        if (error.code !== 'app/duplicate-app') {
-            console.log('Falling back to localStorage');
-        } else {
-            // 이미 초기화된 경우 기존 인스턴스 사용
-            firebaseApp = firebase.app();
-            db = firebase.firestore();
-            console.log('Using existing Firebase instance');
-        }
+        console.log('Falling back to localStorage');
     }
 }
 function isFirebaseReady() {
