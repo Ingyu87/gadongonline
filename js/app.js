@@ -538,11 +538,65 @@ async function addReservation() {
         return;
     }
     const existing = await getReservations();
+    
+    // 1. 같은 장소, 같은 날짜, 같은 시간 중복 체크
     const isDuplicate = existing.some(r => r.date === date && r.space === space && r.period === period);
     if (isDuplicate) {
         showAlert(`🚫 [예약 실패] 이미 예약된 시간입니다.\n${date} ${space} ${period}`);
         return;
     }
+    
+    // 2. 같은 학년반이 같은 날짜, 같은 시간에 다른 장소를 이미 예약한 경우 막기
+    const sameClassSameTime = existing.some(r => 
+        r.date === date && 
+        r.period === period && 
+        r.grade === grade && 
+        r.classNum === classNum && 
+        r.space !== space
+    );
+    if (sameClassSameTime) {
+        showAlert(`🚫 [예약 실패] ${grade} ${classNum}은(는) 이미 같은 시간에 다른 공간을 예약했습니다.\n같은 시간에 여러 장소를 예약할 수 없습니다.`);
+        return;
+    }
+    
+    // 3. 같은 장소를 매주 같은 요일, 같은 시간에 3주 연속 예약 체크
+    const reservationDate = new Date(date);
+    const dayOfWeek = reservationDate.getDay();
+    
+    // 이전 2주, 다음 2주 날짜 계산
+    const prevWeek1 = new Date(reservationDate);
+    prevWeek1.setDate(prevWeek1.getDate() - 7);
+    const prevWeek2 = new Date(reservationDate);
+    prevWeek2.setDate(prevWeek2.getDate() - 14);
+    const nextWeek1 = new Date(reservationDate);
+    nextWeek1.setDate(nextWeek1.getDate() + 7);
+    const nextWeek2 = new Date(reservationDate);
+    nextWeek2.setDate(nextWeek2.getDate() + 14);
+    
+    const formatDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    
+    // 같은 학년반이 같은 장소, 같은 요일, 같은 시간에 예약한 내역 찾기
+    const samePattern = existing.filter(r => 
+        r.space === space && 
+        r.period === period && 
+        r.grade === grade && 
+        r.classNum === classNum
+    );
+    
+    // 연속 3주 체크 (현재 예약 기준으로 앞뒤 2주 확인)
+    const hasPrevWeek1 = samePattern.some(r => r.date === formatDateStr(prevWeek1));
+    const hasPrevWeek2 = samePattern.some(r => r.date === formatDateStr(prevWeek2));
+    const hasNextWeek1 = samePattern.some(r => r.date === formatDateStr(nextWeek1));
+    const hasNextWeek2 = samePattern.some(r => r.date === formatDateStr(nextWeek2));
+    
+    // 3주 연속이 되는 경우: (2주전+1주전+현재) or (1주전+현재+1주후) or (현재+1주후+2주후)
+    const isThreeConsecutive = (hasPrevWeek2 && hasPrevWeek1) || (hasPrevWeek1 && hasNextWeek1) || (hasNextWeek1 && hasNextWeek2);
+    
+    if (isThreeConsecutive) {
+        showAlert(`⚠️ [알림] ${grade} ${classNum}이(가) ${space}를 3주 연속 같은 요일/시간에 예약합니다.\n\n🙏 다른 반을 배려해주세요!`);
+        // 알림만 띄우고 예약은 진행 (경고만 함)
+    }
+    
     const newRes = {
         id: isFirebaseEnabled ? null : Date.now(),
         date: date, grade: grade, classNum: classNum, period: period, space: space, password: password,
