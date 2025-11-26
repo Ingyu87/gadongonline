@@ -340,10 +340,8 @@ async function renderResCalendar(selectedTab) {
     const firstDay = new Date(y, m, 1).getDay();
     const lastDate = new Date(y, m + 1, 0).getDate();
     // reservations는 실시간 동기화로 자동 업데이트됨
-    // 초기 로드 시에만 가져오기
-    if (reservations.length === 0 && isFirebaseReady()) {
-        reservations = await getReservations();
-    } else if (!isFirebaseReady()) {
+    // 하지만 초기 로드나 Firebase가 없을 경우 직접 로드
+    if (reservations.length === 0 || !isFirebaseReady()) {
         reservations = await getReservations();
     }
     for (let i = 0; i < firstDay; i++) {
@@ -691,15 +689,24 @@ window.closeAlert = closeAlert;
 // 앱 초기화
 window.onload = async function() {
     console.log('앱 초기화 시작');
+    
+    // 먼저 초기 데이터 로드 (Firebase 초기화 전)
+    reservations = await getReservations();
+    console.log('초기 예약 로드:', reservations.length, '개');
+    
+    // Firebase 초기화
     await initializeFirebase();
+    
     // Firebase 초기화 후 실시간 동기화가 설정되어야 함
     if (isFirebaseReady()) {
-        console.log('Firebase 준비 완료, 실시간 동기화 대기 중...');
-    } else {
-        // Firebase가 없으면 초기 데이터 로드
+        console.log('Firebase 준비 완료, 실시간 동기화 활성화됨');
+        // Firebase에서 최신 데이터 다시 로드
         reservations = await getReservations();
-        console.log('localStorage에서 예약 로드:', reservations.length, '개');
+        console.log('Firebase에서 예약 로드:', reservations.length, '개');
+    } else {
+        console.log('Firebase 미사용, localStorage 사용 중');
     }
+    
     renderQuickLinks();
     initRooms();
     renderTabs();
