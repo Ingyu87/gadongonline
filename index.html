@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서울가동초등학교 교무업무 대시보드 (2025)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="text-gray-800 bg-gray-50 pb-20">
+    <header class="bg-white border-b-4 border-school-green shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-school-green rounded-full flex items-center justify-center text-white text-xl font-bold">가</div>
+                <h1 class="text-2xl font-bold text-gray-800 tracking-tight">서울가동초등학교 <span class="text-sm font-medium text-gray-500 ml-1">교무업무지원</span></h1>
+            </div>
+            <a href="https://gadong.sen.es.kr" target="_blank" class="hidden md:flex items-center gap-2 bg-gray-800 text-white px-4 py-2 rounded-full text-sm hover:bg-black transition">
+                <span>학교 홈페이지</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 1. 급식 위젯 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border-l-4 border-school-green flex items-center gap-6">
+            <div class="bg-green-100 p-4 rounded-full text-3xl">🍱</div>
+            <div class="flex-grow">
+                <div class="flex items-center gap-2 mb-1">
+                    <button onclick="changeLunchDate(-1)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500">◀</button>
+                    <h2 class="text-lg font-bold text-gray-800" id="lunch-date-display">오늘의 급식</h2>
+                    <button onclick="changeLunchDate(1)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500">▶</button>
+                    <button onclick="resetLunchDate()" class="ml-2 px-2 py-1 text-xs font-bold bg-gray-100 hover:bg-gray-200 text-gray-600 rounded">오늘(25.11.26)</button>
+                </div>
+                <p id="lunch-menu" class="text-gray-600 mt-1 text-lg font-medium leading-relaxed break-keep">데이터를 불러오는 중...</p>
+            </div>
+        </div>
+
+        <!-- 2. 바로가기 링크 모음 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" id="quickLinks"></div>
+
+        <!-- 3. 메인 캘린더 영역 -->
+        <div class="dashboard-card p-6 min-h-[600px] flex flex-col">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <span class="text-school-green">🏫</span> 공간 예약 현황
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">탭을 눌러 공간을 선택하고, <span class="font-bold text-school-green">날짜를 클릭</span>하여 예약하세요.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openReservationModal()" class="px-6 py-2 bg-school-green hover:bg-green-600 text-white font-bold rounded-full shadow-lg transition flex items-center gap-2">
+                        <span>+ 예약하기</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide" id="roomTabs"></div>
+            <div class="flex justify-between items-center mb-4 bg-gray-50 p-3 rounded-lg">
+                <h3 class="text-xl font-bold text-gray-800" id="resCalendarTitle">2025년 11월</h3>
+                <div class="flex gap-2">
+                    <button onclick="changeResMonth(-1)" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">◀ 이전달</button>
+                    <button onclick="changeResMonth(0)" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">오늘(25.11)</button>
+                    <button onclick="changeResMonth(1)" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">다음달 ▶</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-7 border-b-2 border-gray-200 text-center text-sm font-bold text-gray-600 pb-2 mb-2">
+                <div class="text-red-500">일</div>
+                <div>월</div>
+                <div>화</div>
+                <div>수</div>
+                <div>목</div>
+                <div>금</div>
+                <div class="text-blue-500">토</div>
+            </div>
+            <div id="resCalendarGrid" class="calendar-grid flex-grow bg-white rounded-b-lg overflow-hidden"></div>
+        </div>
+
+        <div class="mt-12 flex justify-center">
+            <a href="https://sen.eduptl.kr/bpm_lgn_lg00_001.do?noEpSession" target="_blank" class="flex items-center gap-2 px-8 py-3 bg-gray-700 text-white rounded-full text-base font-medium hover:bg-gray-900 transition shadow-lg">
+                <span>K-에듀파인 바로가기</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+            </a>
+        </div>
+    </main>
+
+    <!-- 알림 모달 -->
+    <div id="alertModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all scale-100">
+            <div class="p-4 border-b bg-gray-100 flex justify-between items-center">
+                <h3 class="font-bold text-gray-800">알림</h3>
+                <button onclick="closeAlert()" class="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+            <div class="p-6 text-center">
+                <p id="alertMessage" class="text-gray-700 font-medium">내용</p>
+            </div>
+            <div class="p-4 bg-gray-50 flex justify-center">
+                <button onclick="closeAlert()" class="px-6 py-2 bg-school-green text-white rounded-lg hover:bg-green-600 transition">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 비밀번호 모달 -->
+    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden">
+            <div class="p-4 border-b bg-red-50 flex justify-between items-center">
+                <h3 class="font-bold text-red-600">예약 취소</h3>
+                <button onclick="closePasswordModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+            <div class="p-6">
+                <p class="text-sm text-gray-600 mb-3">예약 시 설정한 비밀번호를 입력하세요.</p>
+                <input type="password" id="deletePasswordInput" class="form-input w-full text-center text-lg tracking-widest" placeholder="비밀번호" maxlength="8">
+            </div>
+            <div class="p-4 bg-gray-50 flex justify-end gap-2">
+                <button onclick="closePasswordModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">취소</button>
+                <button onclick="confirmDelete()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">삭제하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 예약 모달 -->
+    <div id="reservationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-4 border-b bg-school-green flex justify-between items-center text-white">
+                <h3 class="font-bold text-lg">새 예약 추가</h3>
+                <button onclick="closeReservationModal()" class="text-white hover:text-gray-200 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">사용 공간</label>
+                    <select id="resSpace" class="form-select font-bold text-school-green"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">날짜</label>
+                    <input type="date" id="resDate" class="form-input">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">학년</label>
+                        <select id="resGrade" class="form-select" onchange="updateTimeOptions()">
+                            <option value="">선택</option>
+                            <option value="1학년">1학년</option>
+                            <option value="2학년">2학년</option>
+                            <option value="3학년">3학년</option>
+                            <option value="4학년">4학년</option>
+                            <option value="5학년">5학년</option>
+                            <option value="6학년">6학년</option>
+                            <option value="교과">교과전담</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">반</label>
+                        <select id="resClass" class="form-select">
+                            <option value="1반">1반</option>
+                            <option value="2반">2반</option>
+                            <option value="3반">3반</option>
+                            <option value="4반">4반</option>
+                            <option value="5반">5반</option>
+                            <option value="6반">6반</option>
+                            <option value="7반">7반</option>
+                            <option value="8반">8반</option>
+                            <option value="9반">9반</option>
+                            <option value="전체">전체</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">교시 (시간)</label>
+                    <select id="resPeriod" class="form-select bg-gray-50">
+                        <option value="">학년을 먼저 선택하세요</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">예약 비밀번호 (취소용)</label>
+                    <input type="password" id="resPassword" class="form-input" placeholder="숫자 4자리" maxlength="8">
+                </div>
+                <button onclick="addReservation()" class="w-full bg-school-green hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow transition mt-2">예약 완료</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상세 모달 -->
+    <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-all scale-100">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">예약 상세 내용</h3>
+            <div id="detailContent" class="space-y-3"></div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button onclick="openPasswordModal()" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg text-sm hover:bg-red-200">삭제</button>
+                <button onclick="closeDetailModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/constants.js"></script>
+    <script type="module" src="js/utils.js"></script>
+    <script type="module" src="js/lunch.js"></script>
+    <script type="module" src="js/calendar.js"></script>
+    <script type="module" src="js/reservation.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
+
