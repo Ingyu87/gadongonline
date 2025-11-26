@@ -213,9 +213,7 @@ async function initializeFirebase() {
             }
         }
         // Firebase 초기화 후 실시간 동기화 설정
-        setTimeout(() => {
-            setupFirebaseRealtimeSync();
-        }, 100); // 약간의 지연을 두어 초기화 완료 보장
+        setupFirebaseRealtimeSync();
     } catch (error) {
         console.error('Firebase initialization error:', error);
         console.log('Falling back to localStorage');
