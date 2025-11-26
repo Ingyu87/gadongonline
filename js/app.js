@@ -2,7 +2,7 @@
 // 모듈 import 제거하고 모든 코드를 직접 포함
 
 // ===== 상수 정의 =====
-const VIRTUAL_TODAY = new Date('2025-11-26');
+const VIRTUAL_TODAY = new Date('2025-11-27');
 const LUNCH_API_CONFIG = {
     KEY: '7b92a71da69f426daa05359d9850c714',
     ATPT_OFCDC_SC_CODE: 'B10',
@@ -62,7 +62,9 @@ const QUICK_LINKS = [
     { href: "https://docs.google.com/spreadsheets/d/1RKyY217Ops0tDw9a0Vc9lqaHL-BQxLO_xivy1sVmhLU/edit?pli=1&gid=0#gid=0", icon: "💰", title: "학생참여형 예산", desc: "예산 사용 내역", color: "border-blue-400" },
     { href: "#", icon: "💳", title: "학급운영비 현황", desc: "잔액 확인", color: "border-blue-400", alert: "추후 구축예정입니다." },
     { href: "https://docs.google.com/spreadsheets/d/15g9oZX6oPl4OOTw2jDl01NlfDhe9hlvsrUC68sphYUs/edit?gid=0#gid=0", icon: "✅", title: "법정의무연수", desc: "이수 결과 입력", color: "border-blue-400" },
-    { href: "https://drive.google.com/drive/folders/10te4V2iXihOmtr2RfSQLK6dl3cmgHgzM?usp=drive_link", icon: "📂", title: "학교 구글 드라이브", desc: "공유 자료실", color: "border-blue-400" }
+    { href: "https://drive.google.com/drive/folders/10te4V2iXihOmtr2RfSQLK6dl3cmgHgzM?usp=drive_link", icon: "📂", title: "학교 구글 드라이브", desc: "공유 자료실", color: "border-blue-400" },
+    { href: "#", icon: "📚", title: "교과전담 시간표", desc: "시간표 확인", color: "border-purple-400", alert: "추후 구축예정입니다." },
+    { href: "#", icon: "👨‍🏫", title: "강사 시간표", desc: "시간표 확인", color: "border-purple-400", alert: "추후 구축예정입니다." }
 ];
 
 // ===== 유틸리티 함수 =====
