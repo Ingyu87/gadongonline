@@ -129,6 +129,17 @@ function changeLunchDate(offset) {
 function resetLunchDate() {
     currentLunchDate = new Date(VIRTUAL_TODAY);
     fetchLunch();
+    updateTodayButton();
+}
+function updateTodayButton() {
+    const todayBtn = document.getElementById('today-button');
+    if (todayBtn) {
+        const today = new Date(VIRTUAL_TODAY);
+        const y = String(today.getFullYear()).slice(-2);
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        const d = String(today.getDate()).padStart(2, '0');
+        todayBtn.textContent = `오늘(${y}.${m}.${d})`;
+    }
 }
 
 // ===== 예약 관련 =====
@@ -550,6 +561,7 @@ window.onload = async function() {
     renderTabs();
     await renderResCalendar(ROOMS[0]);
     fetchLunch();
+    updateTodayButton();
     setupModalCloseHandlers();
 };
 
