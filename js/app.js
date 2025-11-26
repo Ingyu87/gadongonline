@@ -692,7 +692,16 @@ window.closeAlert = closeAlert;
 
 // 앱 초기화
 window.onload = async function() {
-    initializeFirebase();
+    console.log('앱 초기화 시작');
+    await initializeFirebase();
+    // Firebase 초기화 후 실시간 동기화가 설정되어야 함
+    if (isFirebaseReady()) {
+        console.log('Firebase 준비 완료, 실시간 동기화 대기 중...');
+    } else {
+        // Firebase가 없으면 초기 데이터 로드
+        reservations = await getReservations();
+        console.log('localStorage에서 예약 로드:', reservations.length, '개');
+    }
     renderQuickLinks();
     initRooms();
     renderTabs();
@@ -700,5 +709,6 @@ window.onload = async function() {
     fetchLunch();
     updateTodayButton();
     setupModalCloseHandlers();
+    console.log('앱 초기화 완료');
 };
 
