@@ -7,21 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Firebase SDK (Firebase 연동 시 활성화) -->
-    <script type="module">
-        import { isFirebaseEnabled } from './js/config.js';
-        if (isFirebaseEnabled) {
-            // Firebase SDK는 config.js에서 isFirebaseEnabled가 true일 때만 로드
-            const script1 = document.createElement('script');
-            script1.src = 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js';
-            const script2 = document.createElement('script');
-            script2.src = 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js';
-            script1.onload = () => {
-                document.head.appendChild(script2);
-            };
-            document.head.appendChild(script1);
-        }
-    </script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body class="text-gray-800 bg-gray-50 pb-20">
     <header class="bg-white border-b-4 border-school-green shadow-sm sticky top-0 z-40">
@@ -206,14 +194,8 @@
         </div>
     </div>
 
-    <!-- Firebase SDK는 firebase-init.js에서 동적으로 로드됩니다 -->
-    <script type="module" src="js/config.js"></script>
-    <script type="module" src="js/constants.js"></script>
-    <script type="module" src="js/utils.js"></script>
-    <script type="module" src="js/lunch.js"></script>
-    <script type="module" src="js/calendar.js"></script>
-    <script type="module" src="js/reservation.js"></script>
-    <script type="module" src="js/main.js"></script>
+    <!-- 모든 JavaScript를 인라인으로 포함 (원본과 동일하게 작동) -->
+    <script src="js/app.js"></script>
 </body>
 </html>
 
