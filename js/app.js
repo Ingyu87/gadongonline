@@ -241,7 +241,8 @@ function setupFirebaseRealtimeSync() {
             async (snapshot) => {
                 const newReservations = [];
                 snapshot.forEach((doc) => {
-                    newReservations.push({ id: doc.id, ...doc.data() });
+                    // doc.data()의 id(null)가 doc.id를 덮어쓰지 않도록 순서 변경
+                    newReservations.push({ ...doc.data(), id: doc.id });
                 });
                 reservations = newReservations;
                 console.log('Firebase 실시간 업데이트:', newReservations.length, '개 예약');
@@ -267,7 +268,8 @@ async function getReservations() {
             const snapshot = await db.collection('reservations').get();
             const reservations = [];
             snapshot.forEach((doc) => {
-                reservations.push({ id: doc.id, ...doc.data() });
+                // doc.data()의 id(null)가 doc.id를 덮어쓰지 않도록 순서 변경
+                reservations.push({ ...doc.data(), id: doc.id });
             });
             return reservations;
         } catch (error) {
