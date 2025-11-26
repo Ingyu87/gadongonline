@@ -10,6 +10,17 @@ const LUNCH_API_CONFIG = {
     SD_SCHUL_CODE: '7130101'
 };
 const ROOMS = ["컴퓨터실", "누리관", "뮤지컬실", "장미홀", "3층 다목적실", "어울림터", "글샘터"];
+
+// 공간별 색상 정의
+const ROOM_COLORS = {
+    "컴퓨터실": { bg: "#3b82f6", hover: "#2563eb", tab: "#3b82f6", tabActive: "#1e40af" },
+    "누리관": { bg: "#8b5cf6", hover: "#7c3aed", tab: "#8b5cf6", tabActive: "#6d28d9" },
+    "뮤지컬실": { bg: "#ec4899", hover: "#db2777", tab: "#ec4899", tabActive: "#be185d" },
+    "장미홀": { bg: "#f59e0b", hover: "#d97706", tab: "#f59e0b", tabActive: "#b45309" },
+    "3층 다목적실": { bg: "#10b981", hover: "#059669", tab: "#10b981", tabActive: "#047857" },
+    "어울림터": { bg: "#06b6d4", hover: "#0891b2", tab: "#06b6d4", tabActive: "#0e7490" },
+    "글샘터": { bg: "#6366f1", hover: "#4f46e5", tab: "#6366f1", tabActive: "#4338ca" }
+};
 const TIME_OPTIONS = {
     low: [
         { val: "1교시 (09:00~)", text: "1교시 (09:00~09:40)" },
@@ -146,6 +157,8 @@ function updateTodayButton() {
 let currentTab = ROOMS[0];
 let selectedEventId = null;
 let currentResDate = new Date(VIRTUAL_TODAY);
+let reservations = [];
+let firebaseUnsubscribe = null; // Firebase 실시간 리스너 해제 함수
 let firebaseApp = null;
 let db = null;
 const isFirebaseEnabled = true; // Firebase 활성화
@@ -199,6 +212,8 @@ async function initializeFirebase() {
                 throw initError;
             }
         }
+        // Firebase 초기화 후 실시간 동기화 설정
+        setupFirebaseRealtimeSync();
     } catch (error) {
         console.error('Firebase initialization error:', error);
         console.log('Falling back to localStorage');
@@ -207,6 +222,41 @@ async function initializeFirebase() {
 function isFirebaseReady() {
     return isFirebaseEnabled && db !== null;
 }
+
+// Firebase 실시간 동기화 설정
+function setupFirebaseRealtimeSync() {
+    if (!isFirebaseReady()) return;
+    
+    // 기존 리스너 해제
+    if (firebaseUnsubscribe) {
+        firebaseUnsubscribe();
+        firebaseUnsubscribe = null;
+    }
+    
+    try {
+        // 실시간 리스너 설정
+        firebaseUnsubscribe = db.collection('reservations').onSnapshot(
+            (snapshot) => {
+                reservations = [];
+                snapshot.forEach((doc) => {
+                    reservations.push({ id: doc.id, ...doc.data() });
+                });
+                // 캘린더 다시 렌더링
+                renderResCalendar(getCurrentTab());
+            },
+            (error) => {
+                console.error('Firebase 실시간 동기화 오류:', error);
+                // 오류 발생 시 localStorage에서 로드
+                reservations = JSON.parse(localStorage.getItem('school_reservations') || '[]');
+                renderResCalendar(getCurrentTab());
+            }
+        );
+        console.log('Firebase 실시간 동기화 활성화');
+    } catch (error) {
+        console.error('Firebase 실시간 동기화 설정 오류:', error);
+    }
+}
+
 async function getReservations() {
     if (isFirebaseReady()) {
         try {
@@ -283,7 +333,10 @@ async function renderResCalendar(selectedTab) {
     title.textContent = `${y}년 ${m + 1}월`;
     const firstDay = new Date(y, m, 1).getDay();
     const lastDate = new Date(y, m + 1, 0).getDate();
-    const reservations = await getReservations();
+    // reservations는 실시간 동기화로 자동 업데이트됨
+    if (reservations.length === 0) {
+        reservations = await getReservations();
+    }
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'bg-gray-50 border-r border-b border-gray-200';
@@ -315,15 +368,44 @@ async function renderResCalendar(selectedTab) {
             eventDiv.textContent = ACADEMIC_CALENDAR[dateStr];
             cell.appendChild(eventDiv);
         }
+        // 현재 탭의 예약만 표시
         const dayEvents = reservations.filter(r => r.date === dateStr && r.space === currentTab);
+        
+        // 공간별 색상 적용
+        const roomColor = ROOM_COLORS[currentTab] || { bg: "#3b82f6", hover: "#2563eb" };
+        
         dayEvents.forEach(evt => {
             const chip = document.createElement('div');
             chip.className = 'event-chip';
-            chip.style.backgroundColor = '#3b82f6';
+            chip.style.backgroundColor = roomColor.bg;
+            chip.style.borderLeft = `3px solid ${roomColor.hover}`;
+            chip.style.fontWeight = '600';
+            chip.style.padding = '4px 8px';
+            chip.style.marginTop = '3px';
+            chip.style.borderRadius = '6px';
+            chip.style.boxShadow = `0 2px 4px ${roomColor.bg}40`;
+            
             const gradeNum = evt.grade.replace('학년','');
             const classNumSimple = evt.classNum === '전체' ? '전' : evt.classNum.replace('반','');
-            const periodShort = evt.period.split('교시')[0].replace('점심시간', '점심');
-            chip.textContent = `${gradeNum}-${classNumSimple} ${periodShort}`;
+            const periodShort = evt.period.split('교시')[0].replace('점심시간', '점심').replace('방과후', '방과후');
+            
+            // 더 명확한 표시
+            chip.innerHTML = `
+                <div style="font-size: 11px; line-height: 1.3;">
+                    <div style="font-weight: 700;">${gradeNum}-${classNumSimple}</div>
+                    <div style="font-size: 10px; opacity: 0.95;">${periodShort}</div>
+                </div>
+            `;
+            
+            chip.onmouseenter = () => {
+                chip.style.backgroundColor = roomColor.hover;
+                chip.style.transform = 'scale(1.02)';
+            };
+            chip.onmouseleave = () => {
+                chip.style.backgroundColor = roomColor.bg;
+                chip.style.transform = 'scale(1)';
+            };
+            
             chip.onclick = (e) => {
                 e.stopPropagation();
                 openDetailModal(evt);
@@ -343,9 +425,37 @@ function renderTabs() {
     if (!container) return;
     container.innerHTML = '';
     ROOMS.forEach(room => {
-        const btn = document.createElement('div');
-        btn.className = `room-tab ${room === currentTab ? 'active' : ''}`;
+        const btn = document.createElement('button');
+        const isActive = room === currentTab;
+        const colors = ROOM_COLORS[room] || { tab: "#7dc242", tabActive: "#569e38" };
+        
+        if (isActive) {
+            btn.className = `room-tab active`;
+            btn.style.backgroundColor = colors.tab;
+            btn.style.borderColor = colors.tab;
+            btn.style.color = 'white';
+            btn.style.boxShadow = `0 4px 6px ${colors.tab}40`;
+        } else {
+            btn.className = `room-tab`;
+            btn.style.backgroundColor = '#f3f4f6';
+            btn.style.borderColor = colors.tab;
+            btn.style.color = colors.tab;
+            btn.style.boxShadow = 'none';
+        }
+        
         btn.textContent = room;
+        
+        btn.onmouseenter = () => {
+            if (!isActive) {
+                btn.style.backgroundColor = `${colors.tab}15`;
+            }
+        };
+        btn.onmouseleave = () => {
+            if (!isActive) {
+                btn.style.backgroundColor = '#f3f4f6';
+            }
+        };
+        
         btn.onclick = async () => {
             setCurrentTab(room);
             renderTabs();
