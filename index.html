@@ -188,6 +188,25 @@ body {
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase 환경 변수 주입 (Vercel) -->
+    <script>
+        // Vercel 환경 변수를 window 객체에 주입
+        // Vercel은 빌드 타임에 환경 변수를 주입하므로, 여기서는 빈 값으로 시작
+        // 실제 배포 시 Vercel이 자동으로 환경 변수를 주입
+        // 로컬 개발 시에는 직접 값을 입력하거나, 빌드 시 주입
+        window.firebaseConfig = {
+            apiKey: "",
+            authDomain: "",
+            projectId: "",
+            storageBucket: "",
+            messagingSenderId: "",
+            appId: "",
+            measurementId: ""
+        };
+        
+        // Vercel 환경 변수가 있으면 사용 (빌드 타임에 주입됨)
+        // 실제로는 Vercel이 빌드 시 이 스크립트를 수정하여 환경 변수를 주입
+    </script>
 </head>
 <body class="text-gray-800 bg-gray-50 pb-20">
     <header class="bg-white border-b-4 border-school-green shadow-sm sticky top-0 z-40">

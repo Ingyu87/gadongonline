@@ -2,7 +2,8 @@
 // 모듈 import 제거하고 모든 코드를 직접 포함
 
 // ===== 상수 정의 =====
-const VIRTUAL_TODAY = new Date('2025-11-27');
+// 실제 현재 날짜 사용
+const VIRTUAL_TODAY = new Date();
 const LUNCH_API_CONFIG = {
     KEY: '7b92a71da69f426daa05359d9850c714',
     ATPT_OFCDC_SC_CODE: 'B10',
@@ -149,23 +150,28 @@ async function initializeFirebase() {
     }
     if (typeof firebase === 'undefined') return;
     try {
-        // 환경 변수에서 Firebase 설정 가져오기 (Vercel)
-        const firebaseConfig = {
-            apiKey: window.VITE_FIREBASE_API_KEY || "",
-            authDomain: window.VITE_FIREBASE_AUTH_DOMAIN || "",
-            projectId: window.VITE_FIREBASE_PROJECT_ID || "",
-            storageBucket: window.VITE_FIREBASE_STORAGE_BUCKET || "",
-            messagingSenderId: window.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-            appId: window.VITE_FIREBASE_APP_ID || "",
-            measurementId: window.VITE_FIREBASE_MEASUREMENT_ID || ""
-        };
-        if (firebaseConfig.apiKey) {
-            firebaseApp = firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            console.log('Firebase initialized successfully');
+        // Vercel 환경 변수는 빌드 타임에 주입되므로, HTML에서 주입된 설정 사용
+        const firebaseConfig = window.firebaseConfig;
+        
+        if (!firebaseConfig || !firebaseConfig.apiKey) {
+            console.log('Firebase config not found, using localStorage only');
+            return;
         }
+        
+        firebaseApp = firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        console.log('Firebase initialized successfully');
     } catch (error) {
         console.error('Firebase initialization error:', error);
+        // 이미 초기화된 경우 무시
+        if (error.code !== 'app/duplicate-app') {
+            console.log('Falling back to localStorage');
+        } else {
+            // 이미 초기화된 경우 기존 인스턴스 사용
+            firebaseApp = firebase.app();
+            db = firebase.firestore();
+            console.log('Using existing Firebase instance');
+        }
     }
 }
 function isFirebaseReady() {
@@ -188,8 +194,14 @@ async function getReservations() {
     return JSON.parse(localStorage.getItem('school_reservations') || '[]');
 }
 async function saveReservation(reservation) {
+    // Firebase가 준비되지 않았으면 초기화 시도
+    if (!isFirebaseReady() && isFirebaseEnabled) {
+        await initializeFirebase();
+    }
+    
     if (isFirebaseReady()) {
         try {
+            // Firebase에 저장 (다른 브라우저에서도 볼 수 있음)
             await db.collection('reservations').add(reservation);
             await renderResCalendar(currentTab);
             return;
@@ -198,14 +210,21 @@ async function saveReservation(reservation) {
             showAlert('Firebase 저장 실패. localStorage로 저장합니다.');
         }
     }
+    // Firebase가 없으면 localStorage 사용 (로컬 개발용)
     const list = await getReservations();
     list.push(reservation);
     localStorage.setItem('school_reservations', JSON.stringify(list));
     await renderResCalendar(currentTab);
 }
 async function deleteReservation(reservationId) {
+    // Firebase가 준비되지 않았으면 초기화 시도
+    if (!isFirebaseReady() && isFirebaseEnabled) {
+        await initializeFirebase();
+    }
+    
     if (isFirebaseReady()) {
         try {
+            // Firebase에서 삭제
             await db.collection('reservations').doc(reservationId).delete();
             await renderResCalendar(currentTab);
             return;
@@ -214,6 +233,7 @@ async function deleteReservation(reservationId) {
             showAlert('Firebase 삭제 실패. localStorage에서 삭제합니다.');
         }
     }
+    // Firebase가 없으면 localStorage에서 삭제
     const list = await getReservations();
     const newList = list.filter(r => r.id !== reservationId);
     localStorage.setItem('school_reservations', JSON.stringify(newList));
