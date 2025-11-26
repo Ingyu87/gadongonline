@@ -153,12 +153,6 @@ function updateTodayButton() {
     if (todayBtn) {
         todayBtn.textContent = `오늘(${y}.${m}.${d})`;
     }
-    
-    // 캘린더 오늘 버튼
-    const calendarTodayBtn = document.getElementById('calendar-today-button');
-    if (calendarTodayBtn) {
-        calendarTodayBtn.textContent = `오늘(${y}.${m})`;
-    }
 }
 
 // ===== 예약 관련 =====
@@ -404,11 +398,11 @@ async function renderResCalendar(selectedTab) {
             const classNumSimple = evt.classNum === '전체' ? '전' : evt.classNum.replace('반','');
             const periodShort = evt.period.split('교시')[0].replace('점심시간', '점심').replace('방과후', '방과후');
             
-            // 더 명확한 표시
+            // 더 명확한 표시: "4-1 2교시" 형식
+            const periodText = evt.period.includes('교시') ? evt.period.split(' ')[0] : evt.period.replace('점심시간', '점심').replace('방과후', '방과후');
             chip.innerHTML = `
-                <div style="font-size: 11px; line-height: 1.3;">
-                    <div style="font-weight: 700;">${gradeNum}-${classNumSimple}</div>
-                    <div style="font-size: 10px; opacity: 0.95;">${periodShort}</div>
+                <div style="font-size: 11px; line-height: 1.4; font-weight: 600;">
+                    ${gradeNum}-${classNumSimple} ${periodText}
                 </div>
             `;
             
@@ -633,7 +627,7 @@ function openDetailModal(evt) {
 function closeDetailModal() {
     const detailModal = document.getElementById('detailModal');
     if (detailModal) detailModal.classList.add('hidden');
-    selectedEventId = null;
+    // selectedEventId는 여기서 null로 설정하지 않음 (삭제 시 필요)
 }
 function openPasswordModal() {
     const passwordModal = document.getElementById('passwordModal');
@@ -674,6 +668,7 @@ async function confirmDelete() {
     
     try {
         await deleteReservation(selectedEventId);
+        selectedEventId = null; // 삭제 완료 후 초기화
         showAlert('삭제되었습니다.');
         closePasswordModal();
         closeDetailModal();
