@@ -194,18 +194,16 @@ body {
         // Vercel은 빌드 타임에 환경 변수를 주입하므로, 여기서는 빈 값으로 시작
         // 실제 배포 시 Vercel이 자동으로 환경 변수를 주입
         // 로컬 개발 시에는 직접 값을 입력하거나, 빌드 시 주입
+        // Firebase 설정 (다른 브라우저에서도 예약을 볼 수 있도록 Firebase 사용)
         window.firebaseConfig = {
-            apiKey: "",
-            authDomain: "",
-            projectId: "",
-            storageBucket: "",
-            messagingSenderId: "",
-            appId: "",
-            measurementId: ""
+            apiKey: "AIzaSyA1Ah3xbmIyadDzhH_FeUGof6UACbZU7qg",
+            authDomain: "gadongonline-5da5e.firebaseapp.com",
+            projectId: "gadongonline-5da5e",
+            storageBucket: "gadongonline-5da5e.firebasestorage.app",
+            messagingSenderId: "66977932038",
+            appId: "1:66977932038:web:c0675ac71c668c60edf487",
+            measurementId: "G-K2PESDLH9S"
         };
-        
-        // Vercel 환경 변수가 있으면 사용 (빌드 타임에 주입됨)
-        // 실제로는 Vercel이 빌드 시 이 스크립트를 수정하여 환경 변수를 주입
     </script>
 </head>
 <body class="text-gray-800 bg-gray-50 pb-20">
