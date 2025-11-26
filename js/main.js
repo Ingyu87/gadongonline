@@ -72,7 +72,10 @@ function setupModalCloseHandlers() {
 /**
  * 앱 초기화
  */
-window.onload = function() {
+window.onload = async function() {
+    // Firebase 초기화 (비동기)
+    initializeFirebase();
+    
     // 바로가기 링크 렌더링
     renderQuickLinks();
     
@@ -83,7 +86,7 @@ window.onload = function() {
     renderTabs();
     
     // 캘린더 렌더링 (첫 번째 공간으로)
-    renderResCalendar(ROOMS[0]);
+    await renderResCalendar(ROOMS[0]);
     
     // 급식 정보 로드
     fetchLunch();

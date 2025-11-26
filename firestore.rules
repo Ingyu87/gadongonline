@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 예약(reservations) 컬렉션 규칙
+    match /reservations/{reservationId} {
+      // 읽기: 모든 사용자 허용 (공개 캘린더)
+      allow read: if true;
+      
+      // 생성: 모든 사용자 허용 (예약 추가)
+      // 데이터 검증 포함
+      allow create: if request.resource.data.keys().hasAll(['date', 'space', 'grade', 'classNum', 'period', 'password', 'createdAt'])
+        && request.resource.data.date is string
+        && request.resource.data.space is string
+        && request.resource.data.grade is string
+        && request.resource.data.classNum is string
+        && request.resource.data.period is string
+        && request.resource.data.password is string
+        && request.resource.data.createdAt is string
+        && request.resource.data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'); // 날짜 형식 검증
+      
+      // 수정: 비밀번호는 앱에서 확인하므로 허용 (추후 제한 가능)
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['password']);
+      
+      // 삭제: 비밀번호는 앱에서 확인하므로 허용
+      allow delete: if true;
+    }
+    
+    // 다른 컬렉션은 기본적으로 거부
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

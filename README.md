@@ -55,12 +55,28 @@ npx http-server
 
 3. 브라우저에서 `http://localhost:8000` 접속
 
-## Firebase 연동 (예정)
+## Firebase 연동
 
-1. Firebase 프로젝트 생성
-2. `js/config.js` 파일에서 Firebase 설정 업데이트
-3. `js/config.js`의 `isFirebaseEnabled`를 `true`로 변경
-4. Firebase SDK 추가 (필요시)
+### ⚠️ 보안 주의사항
+**Firebase 설정 정보는 절대 GitHub에 올리지 마세요!**
+
+### 설정 방법
+
+1. **로컬 개발**
+   ```bash
+   cp js/config.example.js js/config.js
+   ```
+   `js/config.js` 파일에 실제 Firebase 설정 입력 (이 파일은 .gitignore에 포함됨)
+
+2. **Vercel 배포 (권장)**
+   - Vercel 대시보드 > Settings > Environment Variables에서 환경 변수 설정
+   - `SECURITY.md` 파일 참고
+
+3. **Firebase 프로젝트 생성**
+   - `FIREBASE_SETUP.md` 파일 참고
+
+4. **활성화**
+   - `js/config.js`의 `isFirebaseEnabled`를 `true`로 변경
 
 ## 배포
 
