@@ -6,7 +6,7 @@ let currentResDate = new Date(VIRTUAL_TODAY);
 /**
  * 예약 캘린더 렌더링
  */
-export function renderResCalendar(selectedTab) {
+export async function renderResCalendar(selectedTab) {
     if (selectedTab) {
         setCurrentTab(selectedTab);
     }
@@ -25,7 +25,7 @@ export function renderResCalendar(selectedTab) {
 
     const firstDay = new Date(y, m, 1).getDay();
     const lastDate = new Date(y, m + 1, 0).getDate();
-    const reservations = getReservations();
+    const reservations = await getReservations();
 
     // 빈 셀 추가
     for (let i = 0; i < firstDay; i++) {
@@ -106,7 +106,7 @@ export function renderResCalendar(selectedTab) {
 /**
  * 예약 캘린더 월 변경
  */
-export function changeResMonth(delta) {
+export async function changeResMonth(delta) {
     if (delta === 0) {
         currentResDate = new Date(VIRTUAL_TODAY);
     } else {
@@ -114,7 +114,7 @@ export function changeResMonth(delta) {
     }
     // 현재 선택된 탭으로 캘린더 다시 렌더링
     const currentTab = getCurrentTab();
-    renderResCalendar(currentTab);
+    await renderResCalendar(currentTab);
 }
 
 // 전역 함수로 export
