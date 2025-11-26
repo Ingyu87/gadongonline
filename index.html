@@ -153,22 +153,10 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-    background-color: #f3f4f6;
-    color: #6b7280;
-    border: 1px solid #e5e7eb;
     white-space: nowrap;
+    border: 2px solid;
 }
-
-.room-tab:hover { 
-    background-color: #e5e7eb; 
-}
-
-.room-tab.active {
-    background-color: #7dc242;
-    color: white;
-    border-color: #7dc242;
-    box-shadow: 0 4px 6px rgba(125, 194, 66, 0.3);
-}
+/* 색상은 JavaScript에서 동적으로 설정됨 */
 
 .form-select, .form-input {
     width: 100%;
@@ -257,7 +245,7 @@ body {
                 <h3 class="text-xl font-bold text-gray-800" id="resCalendarTitle">2025년 11월</h3>
                 <div class="flex gap-2">
                     <button onclick="changeResMonth(-1)" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">◀ 이전달</button>
-                    <button onclick="changeResMonth(0)" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">오늘(25.11)</button>
+                    <button onclick="changeResMonth(0)" id="calendar-today-button" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">오늘</button>
                     <button onclick="changeResMonth(1)" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">다음달 ▶</button>
                 </div>
             </div>

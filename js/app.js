@@ -143,13 +143,21 @@ function resetLunchDate() {
     updateTodayButton();
 }
 function updateTodayButton() {
+    const today = new Date();
+    const y = String(today.getFullYear()).slice(-2);
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    
+    // 급식 오늘 버튼
     const todayBtn = document.getElementById('today-button');
     if (todayBtn) {
-        const today = new Date(VIRTUAL_TODAY);
-        const y = String(today.getFullYear()).slice(-2);
-        const m = String(today.getMonth() + 1).padStart(2, '0');
-        const d = String(today.getDate()).padStart(2, '0');
         todayBtn.textContent = `오늘(${y}.${m}.${d})`;
+    }
+    
+    // 캘린더 오늘 버튼
+    const calendarTodayBtn = document.getElementById('calendar-today-button');
+    if (calendarTodayBtn) {
+        calendarTodayBtn.textContent = `오늘(${y}.${m})`;
     }
 }
 
