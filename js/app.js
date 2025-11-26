@@ -334,7 +334,10 @@ async function renderResCalendar(selectedTab) {
     const firstDay = new Date(y, m, 1).getDay();
     const lastDate = new Date(y, m + 1, 0).getDate();
     // reservations는 실시간 동기화로 자동 업데이트됨
-    if (reservations.length === 0) {
+    // 초기 로드 시에만 가져오기
+    if (reservations.length === 0 && isFirebaseReady()) {
+        reservations = await getReservations();
+    } else if (!isFirebaseReady()) {
         reservations = await getReservations();
     }
     for (let i = 0; i < firstDay; i++) {
