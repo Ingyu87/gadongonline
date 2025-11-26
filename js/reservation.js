@@ -24,26 +24,9 @@ export function setCurrentTab(tab) {
 /**
  * 예약 목록 가져오기 (로컬스토리지 또는 Firebase)
  */
-export async function getReservations() {
-    if (isFirebaseReady()) {
-        try {
-            const db = getFirestore();
-            const snapshot = await db.collection('reservations').get();
-            
-            const reservations = [];
-            snapshot.forEach((doc) => {
-                reservations.push({ id: doc.id, ...doc.data() });
-            });
-            
-            return reservations;
-        } catch (error) {
-            console.error('Error fetching reservations from Firebase:', error);
-            // Firebase 오류 시 localStorage로 폴백
-            return JSON.parse(localStorage.getItem('school_reservations') || '[]');
-        }
-    }
-    
-    // localStorage 사용
+export function getReservations() {
+    // TODO: Firebase 연동 시 여기서 Firebase에서 데이터 가져오기
+    // 현재는 localStorage만 사용 (원본과 동일)
     return JSON.parse(localStorage.getItem('school_reservations') || '[]');
 }
 
@@ -80,26 +63,14 @@ async function saveReservation(reservation) {
 /**
  * 예약 삭제
  */
-async function deleteReservation(reservationId) {
-    if (isFirebaseReady()) {
-        try {
-            const db = getFirestore();
-            await db.collection('reservations').doc(reservationId).delete();
-            
-            await renderResCalendar(currentTab);
-            return;
-        } catch (error) {
-            console.error('Error deleting reservation from Firebase:', error);
-            showAlert('Firebase 삭제 실패. localStorage에서 삭제합니다.');
-        }
-    }
-    
-    // localStorage 사용
-    const list = await getReservations();
+function deleteReservation(reservationId) {
+    // TODO: Firebase 연동 시 여기서 Firebase에서 삭제
+    // 현재는 localStorage만 사용 (원본과 동일)
+    const list = getReservations();
     const newList = list.filter(r => r.id !== reservationId);
     localStorage.setItem('school_reservations', JSON.stringify(newList));
     
-    await renderResCalendar(currentTab);
+    renderResCalendar(currentTab);
 }
 
 /**
@@ -115,10 +86,10 @@ export function renderTabs() {
         const btn = document.createElement('div');
         btn.className = `room-tab ${room === currentTab ? 'active' : ''}`;
         btn.textContent = room;
-        btn.onclick = async () => {
-            setCurrentTab(room);
+        btn.onclick = () => {
+            currentTab = room;
             renderTabs();
-            await renderResCalendar(room);
+            renderResCalendar(currentTab);
             const resSpaceSelect = document.getElementById('resSpace');
             if (resSpaceSelect) resSpaceSelect.value = room;
         };
@@ -238,16 +209,16 @@ export async function addReservation() {
         createdAt: new Date().toISOString()
     };
 
-    await saveReservation(newRes);
-    showAlert('✅ 예약이 완료되었습니다.');
-    
-    const passwordInput = document.getElementById('resPassword');
-    if (passwordInput) passwordInput.value = '';
-    
-    setCurrentTab(space);
-    renderTabs();
-    renderResCalendar(space);
-    closeReservationModal();
+    await             await saveReservation(newRes);
+            showAlert('✅ 예약이 완료되었습니다.');
+            
+            const passwordInput = document.getElementById('resPassword');
+            if (passwordInput) passwordInput.value = '';
+            
+            setCurrentTab(space);
+            renderTabs();
+            await renderResCalendar(space);
+            closeReservationModal();
 }
 
 /**

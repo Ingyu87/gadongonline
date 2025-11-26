@@ -22,20 +22,18 @@ export function fetchLunch() {
     fetch(API_URL)
         .then(response => response.json())
         .then(data => {
-            if (data.mealServiceDietInfo && lunchContainer) {
+            if (data.mealServiceDietInfo) {
                 let dishName = data.mealServiceDietInfo[1].row[0].DDISH_NM;
                 // 알레르기 번호 제거 정규식
                 dishName = dishName.replace(/\([0-9\.]+\)/g, ''); 
                 dishName = dishName.replace(/<br\/>/g, ', '); 
                 lunchContainer.innerHTML = `<span class="text-school-green font-bold">메뉴:</span> ${dishName}`;
-            } else if (lunchContainer) {
+            } else {
                 lunchContainer.innerHTML = '급식 정보가 없습니다. (휴일 또는 예정 없음)';
             }
         })
         .catch(error => {
-            if (lunchContainer) {
-                lunchContainer.innerText = '급식 정보를 불러오지 못했습니다.';
-            }
+            lunchContainer.innerText = '급식 정보를 불러오지 못했습니다.';
         });
 }
 

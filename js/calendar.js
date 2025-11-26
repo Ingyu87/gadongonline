@@ -6,7 +6,7 @@ let currentResDate = new Date(VIRTUAL_TODAY);
 /**
  * 예약 캘린더 렌더링
  */
-export async function renderResCalendar(selectedTab) {
+export function renderResCalendar(selectedTab) {
     if (selectedTab) {
         setCurrentTab(selectedTab);
     }
@@ -25,7 +25,7 @@ export async function renderResCalendar(selectedTab) {
 
     const firstDay = new Date(y, m, 1).getDay();
     const lastDate = new Date(y, m + 1, 0).getDate();
-    const reservations = await getReservations();
+    const reservations = getReservations();
 
     // 빈 셀 추가
     for (let i = 0; i < firstDay; i++) {

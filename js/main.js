@@ -3,6 +3,7 @@ import { fetchLunch } from './lunch.js';
 import { renderTabs, initRooms, closeReservationModal, closeDetailModal, closePasswordModal } from './reservation.js';
 import { renderResCalendar } from './calendar.js';
 import { showAlert, closeAlert } from './utils.js';
+import { initializeFirebase } from './firebase-init.js';
 
 /**
  * 바로가기 링크 렌더링
@@ -72,8 +73,8 @@ function setupModalCloseHandlers() {
 /**
  * 앱 초기화
  */
-window.onload = async function() {
-    // Firebase 초기화 (비동기)
+window.onload = function() {
+    // Firebase 초기화 (비동기, 백그라운드)
     initializeFirebase();
     
     // 바로가기 링크 렌더링
@@ -86,7 +87,7 @@ window.onload = async function() {
     renderTabs();
     
     // 캘린더 렌더링 (첫 번째 공간으로)
-    await renderResCalendar(ROOMS[0]);
+    renderResCalendar(ROOMS[0]);
     
     // 급식 정보 로드
     fetchLunch();
