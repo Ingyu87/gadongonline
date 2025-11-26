@@ -213,7 +213,9 @@ async function initializeFirebase() {
             }
         }
         // Firebase 초기화 후 실시간 동기화 설정
-        setupFirebaseRealtimeSync();
+        setTimeout(() => {
+            setupFirebaseRealtimeSync();
+        }, 100); // 약간의 지연을 두어 초기화 완료 보장
     } catch (error) {
         console.error('Firebase initialization error:', error);
         console.log('Falling back to localStorage');
@@ -236,19 +238,21 @@ function setupFirebaseRealtimeSync() {
     try {
         // 실시간 리스너 설정
         firebaseUnsubscribe = db.collection('reservations').onSnapshot(
-            (snapshot) => {
-                reservations = [];
+            async (snapshot) => {
+                const newReservations = [];
                 snapshot.forEach((doc) => {
-                    reservations.push({ id: doc.id, ...doc.data() });
+                    newReservations.push({ id: doc.id, ...doc.data() });
                 });
-                // 캘린더 다시 렌더링
-                renderResCalendar(getCurrentTab());
+                reservations = newReservations;
+                console.log('Firebase 실시간 업데이트:', newReservations.length, '개 예약');
+                // 캘린더 다시 렌더링 (async로 처리)
+                await renderResCalendar(getCurrentTab());
             },
-            (error) => {
+            async (error) => {
                 console.error('Firebase 실시간 동기화 오류:', error);
                 // 오류 발생 시 localStorage에서 로드
                 reservations = JSON.parse(localStorage.getItem('school_reservations') || '[]');
-                renderResCalendar(getCurrentTab());
+                await renderResCalendar(getCurrentTab());
             }
         );
         console.log('Firebase 실시간 동기화 활성화');
@@ -281,9 +285,10 @@ async function saveReservation(reservation) {
     
     if (isFirebaseReady()) {
         try {
-            // Firebase에 저장 (다른 브라우저에서도 볼 수 있음)
+            // Firebase에 저장 (실시간 동기화가 자동으로 화면 업데이트)
             await db.collection('reservations').add(reservation);
-            await renderResCalendar(currentTab);
+            console.log('Firebase에 예약 저장 완료');
+            // 실시간 동기화가 있으면 자동으로 renderResCalendar가 호출되므로 여기서는 호출하지 않음
             return;
         } catch (error) {
             console.error('Error saving reservation to Firebase:', error);
@@ -294,7 +299,8 @@ async function saveReservation(reservation) {
     const list = await getReservations();
     list.push(reservation);
     localStorage.setItem('school_reservations', JSON.stringify(list));
-    await renderResCalendar(currentTab);
+    reservations = list; // 전역 변수 업데이트
+    await renderResCalendar(getCurrentTab());
 }
 async function deleteReservation(reservationId) {
     // Firebase가 준비되지 않았으면 초기화 시도
@@ -304,20 +310,22 @@ async function deleteReservation(reservationId) {
     
     if (isFirebaseReady()) {
         try {
-            // Firebase에서 삭제
+            // Firebase에서 삭제 (실시간 동기화가 자동으로 화면 업데이트)
             await db.collection('reservations').doc(reservationId).delete();
-            await renderResCalendar(currentTab);
+            console.log('Firebase에서 예약 삭제 완료:', reservationId);
+            // 실시간 동기화가 있으면 자동으로 renderResCalendar가 호출되므로 여기서는 호출하지 않음
             return;
         } catch (error) {
             console.error('Error deleting reservation from Firebase:', error);
-            showAlert('Firebase 삭제 실패. localStorage에서 삭제합니다.');
+            // Firebase 삭제 실패 시 localStorage로 폴백
         }
     }
     // Firebase가 없으면 localStorage에서 삭제
     const list = await getReservations();
     const newList = list.filter(r => r.id !== reservationId);
     localStorage.setItem('school_reservations', JSON.stringify(newList));
-    await renderResCalendar(currentTab);
+    reservations = newList; // 전역 변수 업데이트
+    await renderResCalendar(getCurrentTab());
 }
 function getCurrentTab() { return currentTab; }
 function setCurrentTab(tab) { currentTab = tab; }
@@ -580,7 +588,12 @@ function closePasswordModal() {
     if (passwordModal) passwordModal.classList.add('hidden');
 }
 async function confirmDelete() {
-    if (!selectedEventId) return;
+    if (!selectedEventId) {
+        console.error('selectedEventId가 없습니다.');
+        showAlert('삭제할 예약을 선택해주세요.');
+        return;
+    }
+    
     const list = await getReservations();
     const targetRes = list.find(r => r.id === selectedEventId);
     if (!targetRes) {
@@ -590,6 +603,7 @@ async function confirmDelete() {
         await renderResCalendar(getCurrentTab());
         return;
     }
+    
     const deletePasswordInput = document.getElementById('deletePasswordInput');
     const inputPw = deletePasswordInput?.value || '';
     const MASTER_KEY = '2025'; // 마스터키
@@ -599,11 +613,21 @@ async function confirmDelete() {
         showAlert('비밀번호가 일치하지 않습니다.');
         return;
     }
-    await deleteReservation(selectedEventId);
-    showAlert('삭제되었습니다.');
-    closePasswordModal();
-    closeDetailModal();
-    await renderResCalendar(getCurrentTab());
+    
+    try {
+        await deleteReservation(selectedEventId);
+        showAlert('삭제되었습니다.');
+        closePasswordModal();
+        closeDetailModal();
+        // Firebase 실시간 동기화가 있으면 자동으로 업데이트되므로 여기서는 호출하지 않음
+        // Firebase가 없을 경우를 대비해 약간의 지연 후 렌더링
+        if (!isFirebaseReady()) {
+            await renderResCalendar(getCurrentTab());
+        }
+    } catch (error) {
+        console.error('삭제 중 오류:', error);
+        showAlert('삭제 중 오류가 발생했습니다.');
+    }
 }
 
 // ===== 메인 초기화 =====
