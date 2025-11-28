@@ -100,3 +100,4 @@ VITE_FIREBASE_MEASUREMENT_ID=G-K2PESDLH9S
 ✅ 환경별(개발/프로덕션) 설정 분리 가능
 ✅ Vercel 대시보드에서만 관리
 
+

@@ -58,7 +58,7 @@ const ACADEMIC_CALENDAR = {
     "2025-10-31": "2학년 현장체험", "2025-11-03": "꿈끼탐색주간(~7)", "2025-11-10": "친구사랑주간(~14)",
     "2025-11-17": "학교평가설문주간(~21)", "2025-11-24": "책읽어주는보호자(~28)", "2025-12-01": "학년부서협의(~5)",
     "2025-12-08": "글샘터독서주간(~12)", "2025-12-15": "정보통신윤리교육(~19)", "2025-12-25": "성탄절",
-    "2025-12-29": "방학생활사전교육(~1.2)", "2026-01-01": "신정", "2026-01-08": "종업식", "2026-01-09": "졸업식"
+    "2025-12-29": "방학생활사전교육(~1.2)", "2026-01-01": "신정", "2026-01-08": "종업식/졸업식"
 };
 const HOLIDAYS = {
     "2024-12-25": true, "2025-01-01": true, "2025-01-28": true, "2025-01-29": true, "2025-01-30": true,
@@ -70,6 +70,7 @@ const QUICK_LINKS = [
     { href: "https://docs.google.com/document/d/1Wnd6cs723AkUyk4pK5HLxfnjPIwLH0JTT6JFNDzP7RU/edit?tab=t.0", icon: "📅", title: "학교 일일계획", desc: "일일 교육계획 확인", color: "border-orange-400" },
     { href: "https://docs.google.com/document/d/1oIgzFtGgni2EvpAwN4ETwY8qYYAS9HwNRTIuJR8IwUU/edit?tab=t.0", icon: "📝", title: "부장협의록", desc: "회의록 열람", color: "border-orange-400" },
     { href: "https://docs.google.com/spreadsheets/d/1chyxgT9loUloJilTIGXWb-xMV1p2R5uKRYijkC3xGdU/edit?gid=0#gid=0", icon: "🗓️", title: "월중 교육활동계획", desc: "월간 일정 확인", color: "border-orange-400" },
+    { href: "#visitReservationSection", icon: "🚪", title: "학교방문 사전예약", desc: "방문 예약 확인", color: "border-amber-400", scroll: true },
     { href: "#", icon: "🏫", title: "자율사업운영제", desc: "운영 현황", color: "border-blue-400", alert: "추후 구축예정입니다." },
     { href: "https://docs.google.com/spreadsheets/d/1RKyY217Ops0tDw9a0Vc9lqaHL-BQxLO_xivy1sVmhLU/edit?pli=1&gid=0#gid=0", icon: "💰", title: "학생참여형 예산", desc: "예산 사용 내역", color: "border-blue-400" },
     { href: "#", icon: "💳", title: "학급운영비 현황", desc: "잔액 확인", color: "border-blue-400", alert: "추후 구축예정입니다." },
@@ -685,6 +686,100 @@ async function confirmDelete() {
     }
 }
 
+// ===== 학교방문 사전예약확인 =====
+const VISIT_SHEET_ID = '1mnx5XHqYTfKql8aXckmYxnUOYIPNvCOwFOUO5MPewOY';
+
+// 월별 시트 GID 매핑 (Google Sheets의 각 탭 gid)
+const VISIT_SHEET_GIDS = {
+    '7월': '1963351363',
+    '8월': '0',  // 기본 시트 또는 실제 gid로 변경 필요
+    '9월': '0',
+    '10월': '0',
+    '11월': '0',
+    '12월': '0',
+    '2026년 1월': '0',
+    '2026년 2월': '0'
+};
+
+let currentVisitMonth = '7월';
+
+function renderVisitMonthTabs() {
+    const container = document.getElementById('visitMonthTabs');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    // 현재 월 계산
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1; // 1-12
+    const currentYear = now.getFullYear();
+    
+    // 표시할 월 목록 (현재 월 기준으로 앞뒤로)
+    const months = [];
+    
+    // 2025년 월들
+    for (let m = 7; m <= 12; m++) {
+        months.push({ label: `${m}월`, year: 2025, month: m });
+    }
+    // 2026년 월들
+    months.push({ label: '2026년 1월', year: 2026, month: 1 });
+    months.push({ label: '2026년 2월', year: 2026, month: 2 });
+    
+    // 현재 날짜에 맞는 기본 탭 설정
+    if (currentYear === 2025 && currentMonth >= 7 && currentMonth <= 12) {
+        currentVisitMonth = `${currentMonth}월`;
+    } else if (currentYear === 2026 && currentMonth <= 2) {
+        currentVisitMonth = `2026년 ${currentMonth}월`;
+    } else {
+        currentVisitMonth = '7월'; // 기본값
+    }
+    
+    months.forEach(({ label }) => {
+        const btn = document.createElement('button');
+        btn.className = `visit-month-tab ${label === currentVisitMonth ? 'active' : ''}`;
+        btn.textContent = label;
+        btn.onclick = () => selectVisitMonth(label);
+        container.appendChild(btn);
+    });
+    
+    // 현재 월 탭으로 스크롤
+    setTimeout(() => {
+        const activeTab = container.querySelector('.visit-month-tab.active');
+        if (activeTab) {
+            activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+    }, 100);
+}
+
+function selectVisitMonth(month) {
+    currentVisitMonth = month;
+    
+    // 탭 스타일 업데이트
+    const tabs = document.querySelectorAll('.visit-month-tab');
+    tabs.forEach(tab => {
+        if (tab.textContent === month) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    
+    // iframe 소스 업데이트
+    updateVisitSheetFrame(month);
+}
+
+function updateVisitSheetFrame(month) {
+    const iframe = document.getElementById('visitSheetFrame');
+    if (!iframe) return;
+    
+    // 월에 해당하는 gid 가져오기 (시트 탭 이름과 매핑)
+    // Google Sheets URL의 gid 파라미터를 변경하여 다른 탭으로 이동
+    const gid = VISIT_SHEET_GIDS[month] || '1963351363';
+    
+    // iframe 소스 변경 (embed 형식)
+    iframe.src = `https://docs.google.com/spreadsheets/d/${VISIT_SHEET_ID}/htmlembed?gid=${gid}&single=true&widget=false&chrome=false`;
+}
+
 // ===== 메인 초기화 =====
 function renderQuickLinks() {
     const container = document.getElementById('quickLinks');
@@ -699,6 +794,16 @@ function renderQuickLinks() {
             linkCard.onclick = (e) => {
                 e.preventDefault();
                 showAlert(link.alert);
+                return false;
+            };
+        } else if (link.scroll) {
+            // 페이지 내 스크롤 링크
+            linkCard.onclick = (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.href);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
                 return false;
             };
         } else {
@@ -744,6 +849,7 @@ window.confirmDelete = confirmDelete;
 window.closeDetailModal = closeDetailModal;
 window.showAlert = showAlert;
 window.closeAlert = closeAlert;
+window.selectVisitMonth = selectVisitMonth;
 
 // 앱 초기화
 window.onload = async function() {
@@ -773,6 +879,10 @@ window.onload = async function() {
     fetchLunch();
     updateTodayButton();
     setupModalCloseHandlers();
+    
+    // 학교방문 사전예약확인 탭 초기화
+    renderVisitMonthTabs();
+    
     console.log('앱 초기화 완료');
 };
 

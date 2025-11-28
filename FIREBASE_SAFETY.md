@@ -63,3 +63,4 @@ Firebase Console > Authentication > 설정 > 승인된 도메인에서:
 - ❌ 관리자 권한이 있는 계정 정보 공개
 - ❌ Firestore 보안 규칙을 `allow read, write: if true`로 설정 (모든 접근 허용)
 
+

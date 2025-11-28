@@ -113,3 +113,4 @@ export const isFirebaseEnabled = true;
 - 환경 변수 사용을 강력히 권장합니다
 - 정기적으로 API 키를 재생성하는 것을 권장합니다
 
+

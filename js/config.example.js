@@ -15,3 +15,4 @@ export const firebaseConfig = {
 // Firebase 초기화는 main.js에서 처리
 export const isFirebaseEnabled = false; // Firebase 연동 준비 완료 시 true로 변경
 
+
