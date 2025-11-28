@@ -719,16 +719,19 @@ function renderQuickLinks() {
     });
 }
 function setupModalCloseHandlers() {
-    window.onclick = function(event) {
+    // 모달 배경 클릭 시 닫기 (이벤트 위임 사용)
+    document.addEventListener('click', function(event) {
         const resModal = document.getElementById('reservationModal');
         const detailModal = document.getElementById('detailModal');
         const alertModal = document.getElementById('alertModal');
         const passwordModal = document.getElementById('passwordModal');
-        if (event.target == resModal) closeReservationModal();
-        if (event.target == detailModal) closeDetailModal();
-        if (event.target == alertModal) closeAlert();
-        if (event.target == passwordModal) closePasswordModal();
-    };
+        
+        // 모달 배경(overlay) 자체를 클릭했을 때만 닫기
+        if (event.target === resModal) closeReservationModal();
+        if (event.target === detailModal) closeDetailModal();
+        if (event.target === alertModal) closeAlert();
+        if (event.target === passwordModal) closePasswordModal();
+    });
 }
 
 // 전역 함수로 등록
