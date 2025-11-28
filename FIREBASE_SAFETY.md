@@ -64,3 +64,4 @@ Firebase Console > Authentication > 설정 > 승인된 도메인에서:
 - ❌ Firestore 보안 규칙을 `allow read, write: if true`로 설정 (모든 접근 허용)
 
 
+
