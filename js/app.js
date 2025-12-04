@@ -9,17 +9,17 @@ const LUNCH_API_CONFIG = {
     ATPT_OFCDC_SC_CODE: 'B10',
     SD_SCHUL_CODE: '7130101'
 };
-const ROOMS = ["컴퓨터실", "누리관", "뮤지컬실", "장미홀", "3층 다목적실", "어울림터", "글샘터"];
+const ROOMS = ["컴퓨터1실", "컴퓨터2실", "누리관", "뮤지컬실", "장미홀", "3층 다목적실", "어울림터"];
 
 // 공간별 색상 정의
 const ROOM_COLORS = {
-    "컴퓨터실": { bg: "#3b82f6", hover: "#2563eb", tab: "#3b82f6", tabActive: "#1e40af" },
+    "컴퓨터1실": { bg: "#3b82f6", hover: "#2563eb", tab: "#3b82f6", tabActive: "#1e40af" },
+    "컴퓨터2실": { bg: "#0ea5e9", hover: "#0284c7", tab: "#0ea5e9", tabActive: "#0369a1" },
     "누리관": { bg: "#8b5cf6", hover: "#7c3aed", tab: "#8b5cf6", tabActive: "#6d28d9" },
     "뮤지컬실": { bg: "#ec4899", hover: "#db2777", tab: "#ec4899", tabActive: "#be185d" },
     "장미홀": { bg: "#f59e0b", hover: "#d97706", tab: "#f59e0b", tabActive: "#b45309" },
     "3층 다목적실": { bg: "#10b981", hover: "#059669", tab: "#10b981", tabActive: "#047857" },
-    "어울림터": { bg: "#06b6d4", hover: "#0891b2", tab: "#06b6d4", tabActive: "#0e7490" },
-    "글샘터": { bg: "#6366f1", hover: "#4f46e5", tab: "#6366f1", tabActive: "#4338ca" }
+    "어울림터": { bg: "#06b6d4", hover: "#0891b2", tab: "#06b6d4", tabActive: "#0e7490" }
 };
 const TIME_OPTIONS = {
     low: [
@@ -77,7 +77,8 @@ const QUICK_LINKS = [
     { href: "https://docs.google.com/spreadsheets/d/15g9oZX6oPl4OOTw2jDl01NlfDhe9hlvsrUC68sphYUs/edit?gid=0#gid=0", icon: "✅", title: "법정의무연수", desc: "이수 결과 입력", color: "border-blue-400" },
     { href: "https://drive.google.com/drive/folders/10te4V2iXihOmtr2RfSQLK6dl3cmgHgzM?usp=drive_link", icon: "📂", title: "학교 구글 드라이브", desc: "공유 자료실", color: "border-blue-400" },
     { href: "#", icon: "📚", title: "교과전담 시간표", desc: "시간표 확인", color: "border-purple-400", alert: "추후 구축예정입니다." },
-    { href: "#", icon: "👨‍🏫", title: "강사 시간표", desc: "시간표 확인", color: "border-purple-400", alert: "추후 구축예정입니다." }
+    { href: "#", icon: "👨‍🏫", title: "강사 시간표", desc: "시간표 확인", color: "border-purple-400", alert: "추후 구축예정입니다." },
+    { href: "https://gadong-schedule.vercel.app/", icon: "📋", title: "시간표 작성", desc: "스마트 스케줄러", color: "border-amber-400" }
 ];
 
 // ===== 유틸리티 함수 =====
