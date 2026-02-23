@@ -133,7 +133,7 @@ export const HOLIDAYS = {
 // 바로가기 링크
 export const QUICK_LINKS = [
     {
-        href: "https://docs.google.com/document/d/1zGcVCDbLRsYnf0OcFtCUJeU1mei83fk7F572CvGApOo/edit?usp=sharing",
+        href: "https://docs.google.com/document/d/1zGcVCDbLRsYnf0OcFtCUJeU1mei83fk7F572CvGApOo/edit?tab=t.0",
         icon: "📅",
         title: "학교 일일계획",
         desc: "일일 교육계획 확인",
