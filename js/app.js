@@ -127,7 +127,7 @@ const HOLIDAYS = {
     "2026-12-25": true
 };
 const QUICK_LINKS = [
-    { href: "https://docs.google.com/document/d/1Wnd6cs723AkUyk4pK5HLxfnjPIwLH0JTT6JFNDzP7RU/edit?tab=t.0", icon: "📅", title: "학교 일일계획", desc: "일일 교육계획 확인", color: "border-orange-400" },
+    { href: "https://docs.google.com/document/d/1zGcVCDbLRsYnf0OcFtCUJeU1mei83fk7F572CvGApOo/edit?tab=t.0", icon: "📅", title: "학교 일일계획", desc: "일일 교육계획 확인", color: "border-orange-400" },
     { href: "https://docs.google.com/document/d/1oIgzFtGgni2EvpAwN4ETwY8qYYAS9HwNRTIuJR8IwUU/edit?tab=t.0", icon: "📝", title: "부장협의록", desc: "회의록 열람", color: "border-orange-400" },
     { href: "https://docs.google.com/spreadsheets/d/1chyxgT9loUloJilTIGXWb-xMV1p2R5uKRYijkC3xGdU/edit?gid=0#gid=0", icon: "🗓️", title: "월중 교육활동계획", desc: "월간 일정 확인", color: "border-orange-400" },
     { href: "https://docs.google.com/spreadsheets/d/1mnx5XHqYTfKql8aXckmYxnUOYIPNvCOwFOUO5MPewOY/edit?gid=1963351363#gid=1963351363", icon: "🚪", title: "학교방문 사전예약", desc: "방문 예약 확인", color: "border-amber-400" },
