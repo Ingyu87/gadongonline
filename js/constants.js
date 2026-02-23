@@ -154,6 +154,13 @@ export const QUICK_LINKS = [
         color: "border-orange-400"
     },
     {
+        href: "https://docs.google.com/spreadsheets/d/1ZwXsUmdrq-km_6U9anPci8i9owxFGUGEZaX3uVYz_28/edit?usp=sharing",
+        icon: "📊",
+        title: "보결배당현황",
+        desc: "2026 보결 배당 현황표",
+        color: "border-orange-400"
+    },
+    {
         href: "#",
         icon: "🏫",
         title: "자율사업운영제",
