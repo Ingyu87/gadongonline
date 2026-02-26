@@ -1,0 +1,7 @@
+{
+  "name": "gadong-online",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/inject-firebase-config.js"
+  }
+}

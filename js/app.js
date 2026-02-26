@@ -414,7 +414,8 @@ async function renderResCalendar(selectedTab) {
     }
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
-        emptyCell.className = 'bg-gray-50 border-r border-b border-gray-200';
+        emptyCell.className = 'calendar-day calendar-day--empty bg-gray-50 border-r border-b border-gray-200';
+        emptyCell.setAttribute('aria-hidden', 'true');
         grid.appendChild(emptyCell);
     }
     for (let d = 1; d <= lastDate; d++) {

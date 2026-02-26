@@ -77,8 +77,10 @@ body {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: minmax(min-content, auto);
     border-top: 1px solid #e5e7eb;
     border-left: 1px solid #e5e7eb;
+    min-width: 280px;
 }
 
 .calendar-day {
@@ -97,6 +99,11 @@ body {
 
 .calendar-day:hover { 
     background-color: #f9fafb; 
+}
+
+.calendar-day--empty {
+    cursor: default;
+    pointer-events: none;
 }
 
 .calendar-day.today { 
@@ -341,16 +348,20 @@ body {
                     <button onclick="changeResMonth(1)" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 text-sm">다음달 ▶</button>
                 </div>
             </div>
-            <div class="grid grid-cols-7 border-b-2 border-gray-200 text-center text-sm font-bold text-gray-600 pb-2 mb-2">
-                <div class="text-red-500">일</div>
-                <div>월</div>
-                <div>화</div>
-                <div>수</div>
-                <div>목</div>
-                <div>금</div>
-                <div class="text-blue-500">토</div>
+            <div class="overflow-x-auto">
+                <div class="min-w-[280px]">
+                    <div class="grid grid-cols-7 border-b-2 border-gray-200 text-center text-sm font-bold text-gray-600 pb-2 mb-2">
+                        <div class="text-red-500">일</div>
+                        <div>월</div>
+                        <div>화</div>
+                        <div>수</div>
+                        <div>목</div>
+                        <div>금</div>
+                        <div class="text-blue-500">토</div>
+                    </div>
+                    <div id="resCalendarGrid" class="calendar-grid flex-grow bg-white rounded-b-lg overflow-hidden"></div>
+                </div>
             </div>
-            <div id="resCalendarGrid" class="calendar-grid flex-grow bg-white rounded-b-lg overflow-hidden"></div>
         </div>
 
         <div class="mt-12 flex justify-center">

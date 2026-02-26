@@ -65,7 +65,12 @@ Vercel 화면에만 입력하고, 이 문서에는 그대로 두세요.
 환경: Production, Preview, Development (모두 체크)
 ```
 
-### 3. 재배포
+### 3. 빌드 시 주입
+이 프로젝트는 **빌드 단계**에서 위 환경 변수를 `index.html`에 넣습니다.
+- `package.json`의 `build` 스크립트가 `scripts/inject-firebase-config.js`를 실행합니다.
+- Vercel이 배포할 때 자동으로 `npm run build`를 실행하므로, **GitHub에는 키가 없고 배포된 사이트에만** 값이 들어갑니다.
+
+### 4. 재배포
 환경 변수 추가 후:
 - 자동으로 재배포되거나
 - 수동으로 "Redeploy" 버튼 클릭

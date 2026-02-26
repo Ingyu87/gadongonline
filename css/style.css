@@ -90,6 +90,11 @@ body {
     background-color: #f9fafb; 
 }
 
+.calendar-day--empty {
+    cursor: default;
+    pointer-events: none;
+}
+
 .calendar-day.today { 
     background-color: #ecfccb; 
     border: 2px solid #7dc242; 
