@@ -644,18 +644,39 @@ async function addReservation() {
         r.classNum === classNum
     );
     
-    // 연속 3주 체크 (현재 예약 기준으로 앞뒤 2주 확인)
+    // 날짜 문자열에 N주 더한 날짜 문자열 반환
+    const addWeeks = (dateStr, weeks) => {
+        const d = new Date(dateStr);
+        d.setDate(d.getDate() + 7 * weeks);
+        return formatDateStr(d);
+    };
+    
+    // 4주 연속 여부: 이번 예약까지 포함한 날짜 집합에서 연속 4주가 있으면 막기
+    const datesInPattern = new Set(samePattern.map(r => r.date));
+    datesInPattern.add(date);
+    const hasFourConsecutive = () => {
+        for (const d of datesInPattern) {
+            const d1 = d;
+            const d2 = addWeeks(d1, 1);
+            const d3 = addWeeks(d1, 2);
+            const d4 = addWeeks(d1, 3);
+            if (datesInPattern.has(d2) && datesInPattern.has(d3) && datesInPattern.has(d4)) return true;
+        }
+        return false;
+    };
+    if (hasFourConsecutive()) {
+        showAlert(`🚫 [예약 불가] ${grade} ${classNum}은(는) ${space}를 같은 요일/시간에 이미 4주 연속 예약되어 있습니다.\n다음 달부터 다시 예약해 주세요.`);
+        return;
+    }
+    
+    // 연속 3주 체크 (현재 예약 기준으로 앞뒤 2주 확인) — 경고만
     const hasPrevWeek1 = samePattern.some(r => r.date === formatDateStr(prevWeek1));
     const hasPrevWeek2 = samePattern.some(r => r.date === formatDateStr(prevWeek2));
     const hasNextWeek1 = samePattern.some(r => r.date === formatDateStr(nextWeek1));
     const hasNextWeek2 = samePattern.some(r => r.date === formatDateStr(nextWeek2));
-    
-    // 3주 연속이 되는 경우: (2주전+1주전+현재) or (1주전+현재+1주후) or (현재+1주후+2주후)
     const isThreeConsecutive = (hasPrevWeek2 && hasPrevWeek1) || (hasPrevWeek1 && hasNextWeek1) || (hasNextWeek1 && hasNextWeek2);
-    
     if (isThreeConsecutive) {
         showAlert(`⚠️ [알림] ${grade} ${classNum}이(가) ${space}를 3주 연속 같은 요일/시간에 예약합니다.\n\n🙏 다른 반을 배려해주세요!`);
-        // 알림만 띄우고 예약은 진행 (경고만 함)
     }
     
     const newRes = {
@@ -725,7 +746,7 @@ async function confirmDelete() {
     
     const deletePasswordInput = document.getElementById('deletePasswordInput');
     const inputPw = deletePasswordInput?.value || '';
-    const MASTER_KEY = '2025'; // 마스터키
+    const MASTER_KEY = '2026'; // 마스터키 (코드 내부에서만 사용)
     
     // 일반 비밀번호 또는 마스터키 확인
     if (inputPw !== targetRes.password && inputPw !== MASTER_KEY) {
