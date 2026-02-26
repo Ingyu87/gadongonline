@@ -5,6 +5,9 @@
 `js/config.js` 파일은 `.gitignore`에 포함되어 GitHub에 올라가지 않습니다.
 대신 Vercel 환경 변수를 사용하여 Firebase 설정을 관리합니다.
 
+> ⚠️ **주의:** 이 문서에는 실제 API 키 값을 절대 적지 말고,  
+> 예시에는 `YOUR_...` 형태의 값만 사용하세요. 실제 값은 Vercel 대시보드에만 입력합니다.
+
 ## 설정 방법
 
 ### 1. Vercel 대시보드 접속
@@ -17,45 +20,48 @@
 
 #### 필수 환경 변수
 
+아래 예시에서 `YOUR_...` 부분은 **Firebase Console에서 복사한 실제 값**으로  
+Vercel 화면에만 입력하고, 이 문서에는 그대로 두세요.
+
 ```
 이름: VITE_FIREBASE_API_KEY
-값: AIzaSyA1Ah3xbmIyadDzhH_FeUGof6UACbZU7qg
+값: YOUR_FIREBASE_API_KEY
 환경: Production, Preview, Development (모두 체크)
 ```
 
 ```
 이름: VITE_FIREBASE_AUTH_DOMAIN
-값: gadongonline-5da5e.firebaseapp.com
+값: YOUR_FIREBASE_AUTH_DOMAIN
 환경: Production, Preview, Development (모두 체크)
 ```
 
 ```
 이름: VITE_FIREBASE_PROJECT_ID
-값: gadongonline-5da5e
+값: YOUR_FIREBASE_PROJECT_ID
 환경: Production, Preview, Development (모두 체크)
 ```
 
 ```
 이름: VITE_FIREBASE_STORAGE_BUCKET
-값: gadongonline-5da5e.firebasestorage.app
+값: YOUR_FIREBASE_STORAGE_BUCKET
 환경: Production, Preview, Development (모두 체크)
 ```
 
 ```
 이름: VITE_FIREBASE_MESSAGING_SENDER_ID
-값: 66977932038
+값: YOUR_FIREBASE_MESSAGING_SENDER_ID
 환경: Production, Preview, Development (모두 체크)
 ```
 
 ```
 이름: VITE_FIREBASE_APP_ID
-값: 1:66977932038:web:c0675ac71c668c60edf487
+값: YOUR_FIREBASE_APP_ID
 환경: Production, Preview, Development (모두 체크)
 ```
 
 ```
 이름: VITE_FIREBASE_MEASUREMENT_ID
-값: G-K2PESDLH9S
+값: YOUR_FIREBASE_MEASUREMENT_ID
 환경: Production, Preview, Development (모두 체크)
 ```
 
@@ -78,13 +84,13 @@ cp js/config.example.js js/config.js
 또는 `.env.local` 파일 생성:
 
 ```env
-VITE_FIREBASE_API_KEY=AIzaSyA1Ah3xbmIyadDzhH_FeUGof6UACbZU7qg
-VITE_FIREBASE_AUTH_DOMAIN=gadongonline-5da5e.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=gadongonline-5da5e
-VITE_FIREBASE_STORAGE_BUCKET=gadongonline-5da5e.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=66977932038
-VITE_FIREBASE_APP_ID=1:66977932038:web:c0675ac71c668c60edf487
-VITE_FIREBASE_MEASUREMENT_ID=G-K2PESDLH9S
+VITE_FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN=YOUR_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_PROJECT_ID=YOUR_FIREBASE_PROJECT_ID
+VITE_FIREBASE_STORAGE_BUCKET=YOUR_FIREBASE_STORAGE_BUCKET
+VITE_FIREBASE_MESSAGING_SENDER_ID=YOUR_FIREBASE_MESSAGING_SENDER_ID
+VITE_FIREBASE_APP_ID=YOUR_FIREBASE_APP_ID
+VITE_FIREBASE_MEASUREMENT_ID=YOUR_FIREBASE_MEASUREMENT_ID
 ```
 
 ## 확인 방법

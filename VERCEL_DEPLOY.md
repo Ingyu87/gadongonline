@@ -26,17 +26,22 @@ git push origin main
 Firebase 설정을 환경 변수로 추가해야 합니다:
 - "Environment Variables" 섹션에서 다음 변수 추가:
 
-| 변수명 | 값 |
-|--------|-----|
-| `VITE_FIREBASE_API_KEY` | `AIzaSyA1Ah3xbmIyadDzhH_FeUGof6UACbZU7qg` |
-| `VITE_FIREBASE_AUTH_DOMAIN` | `gadongonline-5da5e.firebaseapp.com` |
-| `VITE_FIREBASE_PROJECT_ID` | `gadongonline-5da5e` |
-| `VITE_FIREBASE_STORAGE_BUCKET` | `gadongonline-5da5e.firebasestorage.app` |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | `66977932038` |
-| `VITE_FIREBASE_APP_ID` | `1:66977932038:web:c0675ac71c668c60edf487` |
-| `VITE_FIREBASE_MEASUREMENT_ID` | `G-K2PESDLH9S` |
+> ⚠️ **주의:** 아래 표의 값 예시는 실제 키를 적는 자리가 아니라  
+> `YOUR_...` 형태의 **플레이스홀더**입니다.  
+> 실제 값은 Firebase Console에서 복사해 **Vercel 화면에만** 입력하세요.
 
-**중요**: 환경 변수 추가 후 "Deploy" 버튼을 다시 클릭하거나 재배포해야 합니다.
+| 변수명 | 값 예시 (실제 값 아님) |
+|--------|------------------------|
+| `VITE_FIREBASE_API_KEY` | `YOUR_FIREBASE_API_KEY` |
+| `VITE_FIREBASE_AUTH_DOMAIN` | `YOUR_FIREBASE_AUTH_DOMAIN` |
+| `VITE_FIREBASE_PROJECT_ID` | `YOUR_FIREBASE_PROJECT_ID` |
+| `VITE_FIREBASE_STORAGE_BUCKET` | `YOUR_FIREBASE_STORAGE_BUCKET` |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | `YOUR_FIREBASE_MESSAGING_SENDER_ID` |
+| `VITE_FIREBASE_APP_ID` | `YOUR_FIREBASE_APP_ID` |
+| `VITE_FIREBASE_MEASUREMENT_ID` | `YOUR_FIREBASE_MEASUREMENT_ID` |
+
+**중요**: 실제 Firebase 값은 GitHub에 적지 말고, Vercel 대시보드(Environment Variables)에만 입력한 뒤  
+"Deploy" 버튼을 다시 클릭하거나 재배포해야 합니다.
 
 ### 5단계: 배포
 - "Deploy" 버튼 클릭
