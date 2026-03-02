@@ -136,7 +136,7 @@ const QUICK_LINKS = [
     { href: "https://docs.google.com/spreadsheets/d/15g9oZX6oPl4OOTw2jDl01NlfDhe9hlvsrUC68sphYUs/edit?gid=0#gid=0", icon: "✅", title: "법정의무연수", desc: "이수 결과 입력", color: "border-blue-400" },
     { href: "https://drive.google.com/drive/folders/10te4V2iXihOmtr2RfSQLK6dl3cmgHgzM?usp=drive_link", icon: "📂", title: "학교 구글 드라이브", desc: "공유 자료실", color: "border-blue-400" },
     { href: "https://docs.google.com/spreadsheets/d/1odaALfJJvFPHTqQVMdWttN8uFWKACXOlUJepfI5Xp4A/edit?usp=sharing", icon: "📚", title: "교과전담 시간표", desc: "시간표 확인", color: "border-purple-400" },
-    { href: "#", icon: "👨‍🏫", title: "강사 시간표", desc: "시간표 확인", color: "border-purple-400", alert: "추후 구축예정입니다." },
+    { href: "https://docs.google.com/spreadsheets/d/11J4WKEVjEZ3rXtT13ARYbtVpl1hQxJpAbnWtxgSnN_w/edit?usp=sharing", icon: "👨‍🏫", title: "강사 시간표", desc: "시간표 확인", color: "border-purple-400" },
     { href: "https://gadong-schedule.vercel.app/", icon: "📋", title: "시간표 작성", desc: "스마트 스케줄러", color: "border-amber-400" },
     { href: "https://docs.google.com/spreadsheets/d/1P15fUyPv3kNhjAzbl4f5XdiFAKjRsCaM_1GSav7EJ4Y/edit?usp=sharing", icon: "🛡️", title: "안전점검 체크리스트", desc: "교실·시설 안전점검 기록", color: "border-green-500" }
 ];
