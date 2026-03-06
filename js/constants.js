@@ -175,7 +175,7 @@ export const QUICK_LINKS = [
         color: "border-blue-400"
     },
     {
-        href: "https://drive.google.com/drive/folders/1oTbKN3pPfdlVr5XP9uPOzbnJ-27bhEC4?usp=sharing",
+        href: "https://drive.google.com/drive/folders/1oTbKN3pPfdlVr5XP9uPOzbnJ-27bhEC4?usp=drive_link",
         icon: "📂",
         title: "학교 구글 드라이브",
         desc: "공유 자료실",
