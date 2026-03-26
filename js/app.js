@@ -222,6 +222,7 @@ let currentTab = ROOMS[0];
 let selectedEventId = null;
 let currentResDate = new Date(VIRTUAL_TODAY);
 let reservations = [];
+let fixedMusicalReservations = [];
 let firebaseUnsubscribe = null; // Firebase 실시간 리스너 해제 함수
 let firebaseApp = null;
 let db = null;
@@ -410,6 +411,10 @@ async function renderResCalendar(selectedTab) {
     if (reservations.length === 0 || !isFirebaseReady()) {
         reservations = await getReservations();
     }
+    const mergedReservations =
+        currentTab === "뮤지컬실"
+            ? [...fixedMusicalReservations, ...reservations]
+            : reservations;
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'calendar-day calendar-day--empty bg-gray-50 border-r border-b border-gray-200';
@@ -443,7 +448,7 @@ async function renderResCalendar(selectedTab) {
             cell.appendChild(eventDiv);
         }
         // 현재 탭의 예약만 표시
-        const dayEvents = reservations.filter(r => r.date === dateStr && r.space === currentTab);
+        const dayEvents = mergedReservations.filter(r => r.date === dateStr && r.space === currentTab);
         
         // 공간별 색상 적용
         const roomColor = ROOM_COLORS[currentTab] || { bg: "#3b82f6", hover: "#2563eb" };
@@ -867,6 +872,14 @@ window.onload = async function() {
         renderQuickLinks();
         initRooms();
         renderTabs();
+        // 뮤지컬실 CSV 기반 고정 예약 로드
+        if (typeof window.loadFixedMusicalReservations === 'function') {
+            try {
+                fixedMusicalReservations = await window.loadFixedMusicalReservations();
+            } catch (e) {
+                fixedMusicalReservations = [];
+            }
+        }
         await renderResCalendar(ROOMS[0]);
     } catch (e) {
         console.error('캘린더 렌더링 실패:', e);
