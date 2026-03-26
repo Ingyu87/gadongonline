@@ -835,32 +835,51 @@ window.closeAlert = closeAlert;
 // 앱 초기화
 window.onload = async function() {
     console.log('앱 초기화 시작');
-    
-    // 먼저 초기 데이터 로드 (Firebase 초기화 전)
-    reservations = await getReservations();
-    console.log('초기 예약 로드:', reservations.length, '개');
-    
-    // Firebase 초기화
-    await initializeFirebase();
-    
-    // Firebase 초기화 후 실시간 동기화가 설정되어야 함
-    if (isFirebaseReady()) {
-        console.log('Firebase 준비 완료, 실시간 동기화 활성화됨');
-        // Firebase에서 최신 데이터 다시 로드
+
+    // 초기화는 "부분 실패해도 화면은 뜨게" 구성
+    try {
+        // 먼저 초기 데이터 로드 (Firebase 초기화 전)
         reservations = await getReservations();
-        console.log('Firebase에서 예약 로드:', reservations.length, '개');
-    } else {
-        console.log('Firebase 미사용, localStorage 사용 중');
+        console.log('초기 예약 로드:', reservations.length, '개');
+    } catch (e) {
+        console.error('초기 예약 로드 실패:', e);
+        reservations = [];
     }
-    
-    renderQuickLinks();
-    initRooms();
-    renderTabs();
-    await renderResCalendar(ROOMS[0]);
-    fetchLunch();
-    updateTodayButton();
-    setupModalCloseHandlers();
-    
+
+    try {
+        // Firebase 초기화
+        await initializeFirebase();
+
+        // Firebase 초기화 후 실시간 동기화가 설정되어야 함
+        if (isFirebaseReady()) {
+            console.log('Firebase 준비 완료, 실시간 동기화 활성화됨');
+            // Firebase에서 최신 데이터 다시 로드
+            reservations = await getReservations();
+            console.log('Firebase에서 예약 로드:', reservations.length, '개');
+        } else {
+            console.log('Firebase 미사용, localStorage 사용 중');
+        }
+    } catch (e) {
+        console.error('Firebase 초기화 실패:', e);
+    }
+
+    try {
+        renderQuickLinks();
+        initRooms();
+        renderTabs();
+        await renderResCalendar(ROOMS[0]);
+    } catch (e) {
+        console.error('캘린더 렌더링 실패:', e);
+    }
+
+    try {
+        fetchLunch();
+        updateTodayButton();
+        setupModalCloseHandlers();
+    } catch (e) {
+        console.error('급식/모달 초기화 실패:', e);
+    }
+
     console.log('앱 초기화 완료');
 };
 
