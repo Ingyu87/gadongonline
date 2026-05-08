@@ -147,7 +147,7 @@ export const QUICK_LINKS = [
         color: "border-orange-400"
     },
     {
-        href: "https://docs.google.com/spreadsheets/d/1cBH7RpVY5RbUZk74zkz-O1UWL_QSf45RLC6KC-RMFzc/edit?gid=0#gid=0",
+        href: "https://docs.google.com/spreadsheets/d/1SXhtgmNscucpfSqu01gd-ZhWW1n-tYI5DG-C--D6GRs/edit?usp=sharing",
         icon: "🗓️",
         title: "월중 교육활동계획",
         desc: "월간 일정 확인",
