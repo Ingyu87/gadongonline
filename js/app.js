@@ -394,6 +394,19 @@ async function deleteReservation(reservationId) {
 }
 function getCurrentTab() { return currentTab; }
 function setCurrentTab(tab) { currentTab = tab; }
+
+/** 1-2반: 화요일 1교시(삭제 대상)·수요일 5교시(5교시 화요일로 이전) 온라인 예약은 CSV 고정표와 중복되므로 숨김 */
+function filterMusicalReservationsFor12(list) {
+    return list.filter((r) => {
+        if (r.space !== "뮤지컬실" || r.grade !== "1학년" || r.classNum !== "2반") return true;
+        const day = new Date(`${r.date}T12:00:00`).getDay();
+        const period = r.period || "";
+        if (day === 2 && period.startsWith("1교시")) return false;
+        if (day === 3 && period.startsWith("5교시")) return false;
+        return true;
+    });
+}
+
 async function renderResCalendar(selectedTab) {
     if (selectedTab) setCurrentTab(selectedTab);
     const currentTab = getCurrentTab();
@@ -413,7 +426,7 @@ async function renderResCalendar(selectedTab) {
     }
     const mergedReservations =
         currentTab === "뮤지컬실"
-            ? [...fixedMusicalReservations, ...reservations]
+            ? [...fixedMusicalReservations, ...filterMusicalReservationsFor12(reservations)]
             : reservations;
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
