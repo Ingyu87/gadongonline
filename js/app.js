@@ -220,6 +220,7 @@ function updateTodayButton() {
 // ===== 예약 관련 =====
 let currentTab = ROOMS[0];
 let selectedEventId = null;
+let selectedEventIsFixed = false;
 let currentResDate = new Date(VIRTUAL_TODAY);
 let reservations = [];
 let fixedMusicalReservations = [];
@@ -395,7 +396,15 @@ async function deleteReservation(reservationId) {
 function getCurrentTab() { return currentTab; }
 function setCurrentTab(tab) { currentTab = tab; }
 
-/** 1-2반: 화요일 1교시(삭제 대상)·수요일 5교시(5교시 화요일로 이전) 온라인 예약은 CSV 고정표와 중복되므로 숨김 */
+function reservationKey(r) {
+    return `${r.date}|${r.space}|${r.period}|${r.grade}|${r.classNum}`;
+}
+
+function isFixedMusicalReservation(r) {
+    return !!(r && (r.isFixed || String(r.id || "").startsWith("fixed-musical-")));
+}
+
+/** 1-2반: 화요일 1교시·수요일 5교시 온라인 예약은 CSV 고정표와 중복되므로 숨김 */
 function filterMusicalReservationsFor12(list) {
     return list.filter((r) => {
         if (r.space !== "뮤지컬실" || r.grade !== "1학년" || r.classNum !== "2반") return true;
@@ -405,6 +414,14 @@ function filterMusicalReservationsFor12(list) {
         if (day === 3 && period.startsWith("5교시")) return false;
         return true;
     });
+}
+
+/** CSV 고정 일정과 같은 슬롯의 Firebase 예약은 캘린더에 한 번만 표시 */
+function mergeMusicalReservations(fixed, dynamic) {
+    const filtered = filterMusicalReservationsFor12(dynamic);
+    const fixedKeys = new Set(fixed.map(reservationKey));
+    const extra = filtered.filter((r) => !fixedKeys.has(reservationKey(r)));
+    return [...fixed, ...extra];
 }
 
 async function renderResCalendar(selectedTab) {
@@ -426,7 +443,7 @@ async function renderResCalendar(selectedTab) {
     }
     const mergedReservations =
         currentTab === "뮤지컬실"
-            ? [...fixedMusicalReservations, ...filterMusicalReservationsFor12(reservations)]
+            ? mergeMusicalReservations(fixedMusicalReservations, reservations)
             : reservations;
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
@@ -711,8 +728,10 @@ async function addReservation() {
 }
 function openDetailModal(evt) {
     selectedEventId = evt.id;
+    selectedEventIsFixed = isFixedMusicalReservation(evt);
     const detailModal = document.getElementById('detailModal');
     const detailContent = document.getElementById('detailContent');
+    const deleteBtn = document.getElementById('detailDeleteBtn');
     if (!detailModal || !detailContent) return;
     detailContent.innerHTML = `
         <div class="grid grid-cols-3 gap-3 text-sm">
@@ -725,12 +744,16 @@ function openDetailModal(evt) {
             <div class="text-gray-500">시간</div>
             <div class="col-span-2 font-medium">${evt.period}</div>
         </div>
+        ${selectedEventIsFixed ? '<p class="mt-3 text-xs text-gray-500">※ 뮤지컬실 사용대장(CSV) 고정 일정입니다. 온라인 예약 삭제와 별개로 표시됩니다.</p>' : ''}
     `;
+    if (deleteBtn) deleteBtn.classList.toggle('hidden', selectedEventIsFixed);
     detailModal.classList.remove('hidden');
 }
 function closeDetailModal() {
     const detailModal = document.getElementById('detailModal');
+    const deleteBtn = document.getElementById('detailDeleteBtn');
     if (detailModal) detailModal.classList.add('hidden');
+    if (deleteBtn) deleteBtn.classList.remove('hidden');
     // selectedEventId는 여기서 null로 설정하지 않음 (삭제 시 필요)
 }
 function openPasswordModal() {
@@ -749,11 +772,18 @@ async function confirmDelete() {
         showAlert('삭제할 예약을 선택해주세요.');
         return;
     }
+
+    if (selectedEventIsFixed || String(selectedEventId).startsWith('fixed-musical-')) {
+        showAlert('이 일정은 사용대장(CSV)에 등록된 고정 일정입니다.\n온라인 예약 삭제로는 사라지지 않습니다.\n변경이 필요하면 관리자에게 문의해 주세요.');
+        closePasswordModal();
+        closeDetailModal();
+        return;
+    }
     
     const list = await getReservations();
     const targetRes = list.find(r => r.id === selectedEventId);
     if (!targetRes) {
-        showAlert('이미 삭제된 예약입니다.');
+        showAlert('온라인 예약은 이미 삭제되었습니다.\n같은 시간에 보이는 항목이 있다면 사용대장 고정 일정입니다.');
         closePasswordModal();
         closeDetailModal();
         await renderResCalendar(getCurrentTab());
