@@ -29,6 +29,7 @@ const TIME_OPTIONS = {
         { val: "점심시간 (11:20~)", text: "점심시간 (11:20~12:10)" },
         { val: "4교시 (12:10~)", text: "4교시 (12:10~12:50)" },
         { val: "5교시 (13:00~)", text: "5교시 (13:00~13:40)" },
+        { val: "6교시 (13:50~)", text: "6교시 (13:50~14:30)" },
         { val: "방과후", text: "방과후" }
     ],
     high: [
@@ -400,28 +401,48 @@ function reservationKey(r) {
     return `${r.date}|${r.space}|${r.period}|${r.grade}|${r.classNum}`;
 }
 
+function reservationSlotKey(r) {
+    return `${r.date}|${r.space}|${r.period}`;
+}
+
 function isFixedMusicalReservation(r) {
     return !!(r && (r.isFixed || String(r.id || "").startsWith("fixed-musical-")));
 }
 
-/** 1-2반: 화요일 1교시·수요일 5교시 온라인 예약은 CSV 고정표와 중복되므로 숨김 */
-function filterMusicalReservationsFor12(list) {
+/** 1-2반: CSV 고정표와 겹치는 온라인 예약만 캘린더에서 숨김 */
+function filterMusicalReservationsFor12(list, fixed = []) {
+    const fixedSlotKeys = new Set(fixed.map(reservationSlotKey));
+    const fixedKeys = new Set(fixed.map(reservationKey));
+
     return list.filter((r) => {
         if (r.space !== "뮤지컬실" || r.grade !== "1학년" || r.classNum !== "2반") return true;
         const day = new Date(`${r.date}T12:00:00`).getDay();
         const period = r.period || "";
-        if (day === 2 && period.startsWith("1교시")) return false;
-        if (day === 3 && period.startsWith("5교시")) return false;
-        return true;
+        const isLegacyHiddenSlot =
+            (day === 2 && period.startsWith("1교시")) ||
+            (day === 3 && period.startsWith("5교시"));
+        if (!isLegacyHiddenSlot) return true;
+        return !fixedSlotKeys.has(reservationSlotKey(r)) && !fixedKeys.has(reservationKey(r));
     });
 }
 
 /** CSV 고정 일정과 같은 슬롯의 Firebase 예약은 캘린더에 한 번만 표시 */
 function mergeMusicalReservations(fixed, dynamic) {
-    const filtered = filterMusicalReservationsFor12(dynamic);
+    const filtered = filterMusicalReservationsFor12(dynamic, fixed);
+    const fixedSlotKeys = new Set(fixed.map(reservationSlotKey));
     const fixedKeys = new Set(fixed.map(reservationKey));
-    const extra = filtered.filter((r) => !fixedKeys.has(reservationKey(r)));
+    const extra = filtered.filter((r) => {
+        if (fixedSlotKeys.has(reservationSlotKey(r))) return false;
+        return !fixedKeys.has(reservationKey(r));
+    });
     return [...fixed, ...extra];
+}
+
+function getReservationsForBookingCheck(space, allReservations) {
+    if (space === "뮤지컬실") {
+        return mergeMusicalReservations(fixedMusicalReservations, allReservations);
+    }
+    return allReservations;
 }
 
 async function renderResCalendar(selectedTab) {
@@ -632,9 +653,10 @@ async function addReservation() {
         return;
     }
     const existing = await getReservations();
-    
-    // 1. 같은 장소, 같은 날짜, 같은 시간 중복 체크
-    const isDuplicate = existing.some(r => r.date === date && r.space === space && r.period === period);
+    const booked = getReservationsForBookingCheck(space, existing);
+
+    // 1. 같은 장소, 같은 날짜, 같은 시간 중복 체크 (뮤지컬실은 CSV 고정 일정 포함)
+    const isDuplicate = booked.some(r => r.date === date && r.space === space && r.period === period);
     if (isDuplicate) {
         showAlert(`🚫 [예약 실패] 이미 예약된 시간입니다.\n${date} ${space} ${period}`);
         return;
