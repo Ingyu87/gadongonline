@@ -162,6 +162,13 @@ export const QUICK_LINKS = [
         color: "border-orange-400"
     },
     {
+        href: "https://docs.google.com/spreadsheets/d/1BC1q88UVuByhRJvuWsjK5f2IOe92xtLXQr8EoyzbVaU/edit?usp=sharing",
+        icon: "🩺",
+        title: "감염병 현황",
+        desc: "2026 감염병 현황 확인",
+        color: "border-rose-400"
+    },
+    {
         href: "https://docs.google.com/spreadsheets/d/1RKyY217Ops0tDw9a0Vc9lqaHL-BQxLO_xivy1sVmhLU/edit?pli=1&gid=0#gid=0",
         icon: "💰",
         title: "예산 모니터링",

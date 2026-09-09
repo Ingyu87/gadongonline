@@ -132,6 +132,7 @@ const QUICK_LINKS = [
     { href: "https://docs.google.com/document/d/1oIgzFtGgni2EvpAwN4ETwY8qYYAS9HwNRTIuJR8IwUU/edit?tab=t.0", icon: "📝", title: "부장협의록", desc: "회의록 열람", color: "border-orange-400" },
     { href: "https://docs.google.com/spreadsheets/d/1SXhtgmNscucpfSqu01gd-ZhWW1n-tYI5DG-C--D6GRs/edit?usp=sharing", icon: "🗓️", title: "월중 교육활동계획", desc: "월간 일정 확인", color: "border-orange-400" },
     { href: "https://docs.google.com/spreadsheets/d/1ZwXsUmdrq-km_6U9anPci8i9owxFGUGEZaX3uVYz_28/edit?usp=sharing", icon: "📊", title: "보결배당현황", desc: "2026 보결 배당 현황표", color: "border-orange-400" },
+    { href: "https://docs.google.com/spreadsheets/d/1BC1q88UVuByhRJvuWsjK5f2IOe92xtLXQr8EoyzbVaU/edit?usp=sharing", icon: "🩺", title: "감염병 현황", desc: "2026 감염병 현황 확인", color: "border-rose-400" },
     { href: "https://docs.google.com/spreadsheets/d/1mnx5XHqYTfKql8aXckmYxnUOYIPNvCOwFOUO5MPewOY/edit?gid=1963351363#gid=1963351363", icon: "🚪", title: "학교방문 사전예약", desc: "방문 예약 확인", color: "border-amber-400" },
     { href: "https://docs.google.com/spreadsheets/d/1RKyY217Ops0tDw9a0Vc9lqaHL-BQxLO_xivy1sVmhLU/edit?pli=1&gid=0#gid=0", icon: "💰", title: "예산 모니터링", desc: "예산 사용 내역", color: "border-blue-400" },
     { href: "https://docs.google.com/spreadsheets/d/15g9oZX6oPl4OOTw2jDl01NlfDhe9hlvsrUC68sphYUs/edit?gid=0#gid=0", icon: "✅", title: "법정의무연수", desc: "이수 결과 입력", color: "border-blue-400" },
