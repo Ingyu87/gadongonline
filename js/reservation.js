@@ -32,7 +32,16 @@ export async function getReservations() {
             
             const reservations = [];
             snapshot.forEach((doc) => {
-                reservations.push({ id: doc.id, ...doc.data() });
+                const data = doc.data() || {};
+                reservations.push({
+                    id: doc.id,
+                    date: data.date,
+                    space: data.space,
+                    grade: data.grade,
+                    classNum: data.classNum,
+                    period: data.period,
+                    createdAt: data.createdAt
+                });
             });
             
             return reservations;
@@ -53,15 +62,19 @@ export async function getReservations() {
 async function saveReservation(reservation) {
     if (isFirebaseReady()) {
         try {
-            const db = getFirestore();
-            await db.collection('reservations').add(reservation);
-            
-            // 현재 탭으로 캘린더 다시 렌더링
+            const res = await fetch('/api/reservation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'create', ...reservation })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || '예약 저장에 실패했습니다.');
             await renderResCalendar(currentTab);
             return;
         } catch (error) {
             console.error('Error saving reservation to Firebase:', error);
-            showAlert('Firebase 저장 실패. localStorage로 저장합니다.');
+            showAlert(error.message || '예약 저장에 실패했습니다.');
+            return;
         }
     }
     
@@ -77,17 +90,22 @@ async function saveReservation(reservation) {
 /**
  * 예약 삭제
  */
-async function deleteReservation(reservationId) {
+async function deleteReservation(reservationId, password) {
     if (isFirebaseReady()) {
         try {
-            const db = getFirestore();
-            await db.collection('reservations').doc(reservationId).delete();
-            
+            const res = await fetch('/api/reservation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', id: reservationId, password })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || '예약 삭제에 실패했습니다.');
             await renderResCalendar(currentTab);
             return;
         } catch (error) {
             console.error('Error deleting reservation from Firebase:', error);
-            showAlert('Firebase 삭제 실패. localStorage에서 삭제합니다.');
+            showAlert(error.message || '예약 삭제에 실패했습니다.');
+            throw error;
         }
     }
     
@@ -323,12 +341,16 @@ export async function confirmDelete() {
     const deletePasswordInput = document.getElementById('deletePasswordInput');
     const inputPw = deletePasswordInput?.value || '';
 
-    if (inputPw !== targetRes.password) {
-        showAlert('비밀번호가 일치하지 않습니다.');
+    if (!inputPw) {
+        showAlert('비밀번호를 입력해주세요.');
         return;
     }
 
-    await deleteReservation(selectedEventId);
+    try {
+        await deleteReservation(selectedEventId, inputPw);
+    } catch (error) {
+        return;
+    }
     showAlert('삭제되었습니다.');
     
     closePasswordModal();

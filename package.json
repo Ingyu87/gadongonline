@@ -3,5 +3,8 @@
   "private": true,
   "scripts": {
     "build": "node scripts/inject-firebase-config.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
   }
 }
